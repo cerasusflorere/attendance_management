@@ -11,7 +11,7 @@
 
 
 <?php
-    $mysqli = new mysqli('***', '***', '***', '***');
+    $mysqli = new mysqli('localhost', 'phpuser', 'MysqlPhp', 'attendance_management');
     if($mysqli->connect_error){
         echo $mysqli->connect_error;
         exit();
@@ -59,6 +59,7 @@
 ?> 
 <body>
     <div class='register-main-area'>
+        <!-- 学年や名前を選ぶ -->
         <div class='select-area'>
             <div>
                 <p>学年等選択してください</p>
@@ -76,6 +77,19 @@
             </div>
         </div>
         
+        <!-- 健康かどうか選択 -->
+        <div class='answer-area'>
+            <div class='date-time'>
+                <input type='date' name='date' value="2021-10-01">
+                <input type='time' name='arrival_time' value='09:00'>
+                <input type='time' name='departure_time' value='17:00'>
+            </div>
+        </div>
+
+        <div class='health-area'>
+            <input type='checkbox' id='health' class='health-button'>
+            <label for='health'>健康（37.5℃以下）</label>
+        </div>
     </div>
 
     <script>
