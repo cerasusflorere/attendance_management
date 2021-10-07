@@ -9,7 +9,6 @@
     <title>Register</title>
 </head>
 
-
 <?php
     $mysqli = new mysqli('localhost', 'phpuser', 'MysqlPhp', 'attendance_management');
     if($mysqli->connect_error){
@@ -57,39 +56,112 @@
     }
     $drop_name_position = json_encode($drop_name_position);
 ?> 
+
 <body>
     <div class='register-main-area'>
-        <!-- 学年や名前を選ぶ -->
-        <div class='select-area'>
-            <div>
-                <p>学年等選択してください</p>
-                <select name='position' id='position'>
-                    <option value=''>選択してください</option>
-                    <?php 
-                      echo $drop_position; ?>
-                </select>
+        <form action='' method='post'>
+            <!-- 学年や名前を選ぶ -->
+            <div class='select-area'>
+                <div>
+                    <p>学年等選択してください</p>
+                    <select name='position' id='position'>
+                        <option value=''>選択してください</option>
+                        <?php 
+                            echo $drop_position; ?>
+                    </select>
+                </div>
+                <div>
+                    <p>名前を選択してください</p>
+                    <select name='name' id='name'>
+                        <option value=''>選択してください</option>
+                    </select>
+                </div>
             </div>
-            <div>
-            <p>名前を選択してください</p>
-                <select name='name' id='name'>
-                    <option value=''>選択してください</option>
-                </select>
-            </div>
-        </div>
         
-        <!-- 健康かどうか選択 -->
-        <div class='answer-area'>
-            <div class='date-time'>
-                <input type='date' name='date' value="2021-10-01">
-                <input type='time' name='arrival_time' value='09:00'>
-                <input type='time' name='departure_time' value='17:00'>
-            </div>
-        </div>
+            <!-- 来校情報 -->
+            <div class='answers-area'>
+                <!-- 来校日時登録 -->
+                <div class='answers-each-area'>
+                    <input type='date' name='date' value="2021-10-01">
+                    <input type='time' name='arrival_time' value='09:00'>
+                    <input type='time' name='departure_time' value='17:00'>
+                </div>
 
-        <div class='health-area'>
-            <input type='checkbox' id='health' class='health-button'>
-            <label for='health'>健康（37.5℃以下）</label>
-        </div>
+                <!-- 健康チェック -->
+                <div class='answers-each-area'>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='health' class='attendance-check'>
+                        <label for='health' class='attendance-label'>健康（37.5℃以下）</label>
+                    </div>
+                </div>
+
+                <!-- 来校場所チェック -->
+                <div class='answers-each-area'>
+                    <span>医心館</span>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN401' class='attendance-check'>
+                        <label for='IN401' class='attendance-label'>IN401N</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN501' class='attendance-check'>
+                        <label for='IN501' class='attendance-label'>IN501N</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN505' class='attendance-check'>
+                        <label for='IN505' class='attendance-label'>IN505N</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN418' class='attendance-check'>
+                        <label for='IN418' class='attendance-label'>IN4I8N（小早川）</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN419' class='attendance-check'>
+                        <label for='IN419' class='attendance-label'>IN419N（早見）</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN603' class='attendance-check'>
+                        <label for='IN603' class='attendance-label'>コウモリ舎</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN601' class='attendance-check'>
+                        <label for='IN601' class='attendance-label'>サル・ネズミ舎</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN409' class='attendance-check'>
+                        <label for='IN409' class='attendance-label'>IN409N</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='IN412' class='attendance-check'>
+                        <label for='IN412' class='attendance-label'>IN412N</label>
+                    </div>
+                    <div class='answer-each'>
+                        <label class='attendance-label'>その他</label>
+                        <input type='text' id='IN_other' class='attendance-text'>
+                    </div>
+                </div>
+
+                <div class='answers-each-area'>
+                    <span>その他</span>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='dining' class='attendance-check'>
+                        <label for='dining' class='attendance-label'>紫苑館</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='purchasing' class='attendance-check'>
+                        <label for='purchasing' class='attendance-label'>購買部</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='library' class='attendance-check'>
+                        <label for='library' class='attendance-label'>図書館</label>
+                    </div>
+                    <div class='answer-each'>
+                        <input type='checkbox' id='other' class='attendance-check'>
+                        <label for='other' class='attendance-label'>その他</label>
+                    </div>
+                </div>
+            </div>
+            <input type='submit' class='submit-button' value='送信'>
+        </form>
     </div>
 
     <script>
