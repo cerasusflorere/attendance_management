@@ -56,7 +56,7 @@
     border-top: 1px solid lightgrey;
   }
 
-  /* ログイン画面 */
+  /* ホーム画面 */
 .login-area{
     display: flex;
     position: relative;
@@ -106,4 +106,59 @@
     text-decoration: none;    
     transition-duration: 0.2s;
   }
+  .login-button:active{
+    -webkit-transform: translateY(0.25em);
+    transform: translateY(0.25em);/*下に動く*/
+    border-bottom: none;/*線を消す*/
+  }
   
+
+  /* 来校情報登録画面 */
+  .answers-each-area{
+    display: block;
+    width: 90%;
+    padding: 0.625em 0.9375em;
+    margin: 1.25em;
+    margin-right: 0;
+    border-radius: 0.625em;
+    border: 1px solid #666666;
+  }
+  /* 各種ボタンたち */
+  .attendance-check{
+    display: none;
+  }
+  .attendance-label{
+    box-sizing: border-box;
+    cursor: pointer;
+    display: inline-block;
+    padding: 0.3em 2em;
+    position: relative;
+    width: auto;
+  }
+  .attendance-label::before{
+    background: #fff;
+    border: 1px solid #666666;
+    content: '';
+    height: 1em;
+    left: 0.5em;
+    margin-top: -0.65em;
+    position: absolute;
+    top: 50%;
+    width: 1em;
+  }
+  .attendance-label::after{
+    border-right: 0.2em solid #666666;
+    border-bottom: 0.2em solid #666666;
+    content: '';
+    height: 0.6em;
+    left: 0.8em;
+    margin-top: -0.6em;
+    opacity: 0;
+    position: absolute;
+    top: 50%;
+    transform: rotate(45deg);
+    width: 0.3em;
+  }
+  .attendance-check:checked + .attendance-label::after{
+    opacity: 1;
+  }
