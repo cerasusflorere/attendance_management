@@ -10,6 +10,11 @@
 </head>
 
 <?php
+    function h($str)
+    {
+        return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+    }
+
     $mysqli = new mysqli('localhost', 'phpuser', 'MysqlPhp', 'attendance_management');
     if($mysqli->connect_error){
         echo $mysqli->connect_error;
@@ -18,6 +23,9 @@
         $mysqli->set_charset("utf8mb4");
     }
     
+     // 成功・エラーメッセージの初期化
+     $errors = array();
+
     // position名を取得
     $drop_positions = array();
     $drop_position = '';
@@ -55,10 +63,193 @@
         print('Error:'.$e->getMessage());
     }
     $drop_name_position = json_encode($drop_name_position);
+
+
+    // 確認する(btn_confirm)を押した後の処理
+    if(isset($_POST['btn_confirm'])){
+        // POSTされたデータをいれる
+        $name = isset($_POST['name']) ? $_POST['name']:NULL;
+        $date = isset($_POST['date']) ? $_POST['date']:NULL;
+        $arrival_time = isset($_POST['arrival_time']) ? $_POST['arrival_time']:NULL;
+        $departure_time = isset($_POST['departure_time']) ? $_POST['departure_time']:NULL; 
+        $health = isset($_POST['health']) ? $_POST['health']:NULL;       
+        $log = isset($_POST['log']) ? $_POST['log']:NULL;
+        $IN_other = isset($_POST['IN_other']) ? $_POST['IN_other']:NULL;
+        $other = isset($_POST['other']) ? $_POST['other']:NULL;
+
+        if($name=='' || $date=='' || $arrival_time=='' || $departure_time=='' || $health == ''){
+            if($name == ''){
+                $errors['name'] = '名前が入力されていません';
+            }
+            if($date == '2021-10-01'){
+                $errors['date'] = '日付が入力されていません';
+            }
+            if($arrival_time == ''){
+                $errors['arrival_time'] = '登校時間が入力されていません';
+            }
+            if($departure_time == ''){
+                $errors['departure_time'] = '下校時間が入力されていません';
+            }
+            if($health == ''){
+                $errors['health'] = '体温はどうでしたか';
+            }
+        }else{
+            if(!empty($errors['name'])){
+                unset($errors['name']);
+            }
+            if(!empty($errors['date'])){
+                unset($errors['date']);
+            }
+            if(!empty($errors['arrival_time'])){
+                unset($errors['arrival_time']);
+            }
+            if(!empty($errors['departure_time'])){
+                unset($errors['departure_time']);
+            }
+            if(!empty($errors['health'])){
+                unset($errors['health']);
+            }
+        }
+
+        if($name != ''){
+            $_SESSION['name'] = $name;
+        }
+        if($date != '2021-10-01'){
+            $_SESSION['date'] = $date;
+        }
+        if($arrival_time != ''){
+            $_SESSION['arrival_time'] = $arrival_time;
+        }
+        if($departure_time != ''){
+            $_SESSION['departure_time'] = $departure_time;
+        }
+        if($health != ''){
+            $_SESSION['health'] = $health;
+        }
+        if($log != '' || is_array($log)){
+            $_SESSION['log'] = $log;
+        }
+        if($IN_other != ''){
+            $_SESIION['IN_other'] = $IN_other;
+        }
+        if($other != ''){
+            $_SESIION['other'] = $other;
+        }
+    }
+
+
+    // 登録する(btn_submit)を押した後の処理
+    if(isset($_POST["btn_submit"])){
+        $name = $_SESSION['name'];
+        var_dump($name);
+        $date = $_SESSION['date'];
+        $arrival_time = $_SESSION['arrival_date'];
+        $departure_time = $_SESSION['departure_date'];
+        $health = 1;
+        $places = array_fill(0, 12, 0);
+        $logs = $_SESSION['log'];
+        foreach($logs as $log){
+            if($log == 'IN401N'){
+                $places[0] = 1;
+            }
+            if($log == 'IN501N'){
+                $places[1] = 1;
+            }
+            if($log == 'IN505N'){
+                $places[2] = 1;
+            }
+            if($log == 'IN418N'){
+                $places[3] = 1;
+            }
+            if($log == 'IN419N'){
+                $places[4] = 1;
+            }
+            if($log == 'IN603N'){
+                $places[5] = 1;
+            }
+            if($log == 'IN601N'){
+                $places[6] = 1;
+            }
+            if($log == 'IN409N'){
+                $places[7] = 1;
+            }
+            if($log == 'IN412N'){
+                $places[8] = 1;
+            }
+            if($log == '紫苑館'){
+                $places[9] = 1;
+            }
+            if($log == '購買部'){
+                $places[10] = 1;
+            }
+            if($log == '図書館'){
+                $places[11] = 1;
+            }
+        }
+        $IN_other = isset($_SESIION['IN_other']) ? $_SESIION['IN_other']:NULL;
+        $other = isset($_SESSION['other']) ? $_SESIION['other']:NULL;
+
+        // ここでデータベースに登録する
+        try{
+            $stmt = $mysqli -> prepare("INSERT INTO time_and_place (name, date, health, arrival_time, departure_time, IN401N, IN501N, IN505N, IN418N, IN419N, IN603N, IN601N, IN409N, IN412N, IN_other, dining, parchasing, library, other) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+            $stmt -> bind_param('ssissiiiiiiiiisiiis', $name, $date, $health, $arrival_time, $departure_time, $places[0], $places[1], $places[2], $places[3], $places[4], $places[5], $places[6], $places[7], $places[8], $IN_other, $places[9], $places[10], $places[11], $other);
+            $stmt -> execute();
+        }catch(PDOException $e){
+            //トランザクション取り消し
+            $pdo -> rollBack();
+            $errors['error'] = "もう一度やり直してください。";
+            print('Error:'.$e->getMessage());
+        }
+    }
 ?> 
 
 <body>
     <div class='register-main-area'>
+        <!-- page3 完了画面 -->
+        <?php if(isset($_POST["btn_submit"]) && count($errors) == 0): ?>
+   　       登録しました。
+
+        <!-- page2 確認画面 -->
+        <?php elseif(isset($_POST['btn_confirm']) && count($errors) == 0): ?>
+            <p>このまま登録していいですか？</p>
+        　　<from action='' method='post'>
+                <div class='answers-each-area'>
+                   <p>名前: <?=h($_SESSION['name'])?></p>
+                   <p>日付: <?=h($_SESSION['date'])?></p>
+                   <p>登校時間: <?=h($_SESSION['arrival_time'])?></p>
+                   <p>下校時間: <?=h($_SESSION['departure_time'])?></p>
+                   <p>健康チェック: <?='〇'?></p>
+                   <p>あなたが行った場所: </p>
+                   <?php if(isset($_SESSION['log'])){
+                            if(is_array($_SESSION['log'])){
+                                foreach($_SESSION['log'] as $logs){
+                                    echo nl2br($logs.PHP_EOL);
+                                }
+                            }else{
+                                echo $_SESIION['log'];
+                            }                            
+                          } ?>
+                    <?php if(isset($_SESIION['IN_other'])){
+                              echo $_SESIION['IN_other'];
+                          } ?>
+                    <?php if(isset($_SESSION['other'])){
+                              echo $_SESIION['other'];
+                          } ?>
+                </div>
+                <input type="submit" name="btn_back" value="戻る">
+                <input type="submit" name="btn_submit" value="登録する">
+            </from>
+
+        <!-- page1 登録画面 -->
+        <?php elseif(!isset($errors['error']) || isset($_POST["btn_back"])): ?>
+            <?php if(count($errors) > 0): ?>
+                <?php 
+                    foreach($errors as $value){
+                        echo nl2br($value.PHP_EOL);
+                    }
+                ?>
+            <?php endif; ?>
+
         <form action='' method='post'>
             <!-- 学年や名前を選ぶ -->
             <div class='select-area'>
@@ -90,7 +281,7 @@
                 <!-- 健康チェック -->
                 <div class='answers-each-area'>
                     <div class='answer-each'>
-                        <input type='checkbox' id='health' class='attendance-check'>
+                        <input type='checkbox' id='health' name='health' value='health' class='attendance-check'>
                         <label for='health' class='attendance-label'>健康（37.5℃以下）</label>
                     </div>
                 </div>
@@ -99,78 +290,82 @@
                 <div class='answers-each-area'>
                     <span>医心館</span>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN401' class='attendance-check'>
+                        <input type='checkbox' id='IN401' name='log[]' value='IN401N' class='attendance-check'>
                         <label for='IN401' class='attendance-label'>IN401N</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN501' class='attendance-check'>
+                        <input type='checkbox' id='IN501' name='log[]' value='IN501N' class='attendance-check'>
                         <label for='IN501' class='attendance-label'>IN501N</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN505' class='attendance-check'>
+                        <input type='checkbox' id='IN505' name='log[]' value='IN505N' class='attendance-check'>
                         <label for='IN505' class='attendance-label'>IN505N</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN418' class='attendance-check'>
+                        <input type='checkbox' id='IN418' name='log[]' value='IN418N' class='attendance-check'>
                         <label for='IN418' class='attendance-label'>IN4I8N（小早川）</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN419' class='attendance-check'>
+                        <input type='checkbox' id='IN419' name='log[]' value='IN419N' class='attendance-check'>
                         <label for='IN419' class='attendance-label'>IN419N（早見）</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN603' class='attendance-check'>
+                        <input type='checkbox' id='IN603' name='log[]' value='IN603N' class='attendance-check'>
                         <label for='IN603' class='attendance-label'>コウモリ舎</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN601' class='attendance-check'>
+                        <input type='checkbox' id='IN601' name='log[]' value='IN601N' class='attendance-check'>
                         <label for='IN601' class='attendance-label'>サル・ネズミ舎</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN409' class='attendance-check'>
+                        <input type='checkbox' id='IN409' name='log[]' value='IN409N' class='attendance-check'>
                         <label for='IN409' class='attendance-label'>IN409N</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='IN412' class='attendance-check'>
+                        <input type='checkbox' id='IN412' name='log[]' value='IN412N' class='attendance-check'>
                         <label for='IN412' class='attendance-label'>IN412N</label>
                     </div>
                     <div class='answer-each'>
                         <label class='attendance-label'>その他</label>
-                        <input type='text' id='IN_other' class='attendance-text'>
+                        <input type='text' id='IN_other' name='IN_other' class='attendance-text'>
                     </div>
                 </div>
 
                 <div class='answers-each-area'>
                     <span>その他</span>
                     <div class='answer-each'>
-                        <input type='checkbox' id='dining' class='attendance-check'>
+                        <input type='checkbox' id='dining' name='log[]' value='紫苑館' class='attendance-check'>
                         <label for='dining' class='attendance-label'>紫苑館</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='purchasing' class='attendance-check'>
+                        <input type='checkbox' id='purchasing' name='log[]' value='購買部' class='attendance-check'>
                         <label for='purchasing' class='attendance-label'>購買部</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='library' class='attendance-check'>
+                        <input type='checkbox' id='library' name='log[]' value='図書館' class='attendance-check'>
                         <label for='library' class='attendance-label'>図書館</label>
                     </div>
                     <div class='answer-each'>
-                        <input type='checkbox' id='other' class='attendance-check'>
-                        <label for='other' class='attendance-label'>その他</label>
+                        <label class='attendance-label'>その他</label>
+                        <input type='text' id='other' name='other' class='attendance-text'>                        
                     </div>
                 </div>
             </div>
-            <input type='submit' class='submit-button' value='送信'>
+            <input type='submit' name='btn_confirm' class='submit-button' value='確認する'>
         </form>
+        <?php endif; ?>
     </div>
 
     <script>
         let select_name = document.getElementById('name');
         let select_position = document.getElementById('position');
-        select_position.onchange = changePosition;
+        if(document.getElementById('position')){
+            select_position.onchange = changePosition;
+        }
+        
         const names_positions = JSON.parse('<?php echo $drop_name_position; ?>');
 
-
+    
         // 学年が変更されたときの動作
         function changePosition(){
             // 変更後の学年を取得
