@@ -209,7 +209,9 @@
     <div class='register-main-area'>
         <!-- page3 完了画面 -->
         <?php if(isset($_POST['btn_submit']) && count($errors) == 0): ?>
-   　       登録しました。
+            <div class='success-message'>
+                登録しました。
+            </div>   　       
 
         <!-- page2 確認画面 -->
         <?php elseif(isset($_POST['btn_confirm']) && count($errors) == 0): ?>
@@ -254,7 +256,7 @@
 
             <form action='' method='post'>
                 <!-- 学年や名前を選ぶ -->
-                <div class='select-area'>
+                <div class='answers-area'>
                     <div>
                         <p>学年等選択してください</p>
                         <select name='position' id='position'>
@@ -591,8 +593,6 @@
                 select_name.appendChild(nameOption);
             });
         }
-
-        
     </script>
 </body>
 </html>   
