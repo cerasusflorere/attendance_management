@@ -16,7 +16,7 @@
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
 
-    $mysqli = new mysqli();
+    $mysqli = new mysqli('***', '***', '***', '***');
     if($mysqli->connect_error){
         echo $mysqli->connect_error;
         exit();
@@ -247,26 +247,28 @@
         <!-- page1 登録画面 -->
         <?php elseif(!isset($errors['error']) || isset($_POST["btn_back"])): ?>
             <?php if(count($errors) > 0): ?>
-                <?php 
-                    foreach($errors as $value){
-                        echo nl2br($value.PHP_EOL);
-                    }
-                ?>
+                <div class='error-message'>
+                    <?php 
+                        foreach($errors as $value){
+                            echo nl2br($value.PHP_EOL);
+                        }
+                    ?>
+                </div>
             <?php endif; ?>
 
             <form action='' method='post'>
                 <!-- 学年や名前を選ぶ -->
-                <div class='answers-area'>
+                <div class='answers-each-area'>
                     <div>
-                        <p>学年等選択してください</p>
+                        <div>学年等選択してください</div>
                         <select name='position' id='position'>
                             <option value=''>選択してください</option>
                             <?php 
                                 echo $drop_position; ?>
                         </select>
-                    </div>
+                    </div><br>
                     <div>
-                        <p>名前を選択してください</p>
+                        <div>名前を選択してください</div>
                         <select name='name' id='name'>
                             <option value=''>選択してください</option>
                         </select>
@@ -593,6 +595,8 @@
                 select_name.appendChild(nameOption);
             });
         }
+
+        
     </script>
 </body>
 </html>   
