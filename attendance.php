@@ -16,7 +16,7 @@
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
 
-    $mysqli = new mysqli('localhost', 'phpuser', 'MysqlPhp', 'attendance_management');
+    $mysqli = new mysqli();
     if($mysqli->connect_error){
         echo $mysqli->connect_error;
         exit();
