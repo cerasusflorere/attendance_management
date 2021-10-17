@@ -71,8 +71,8 @@
         // POSTされたデータをいれる
         $name = isset($_POST['name']) ? $_POST['name']:NULL;
         $date = isset($_POST['date']) ? $_POST['date']:NULL;
-        $arrival_time = isset($_POST['arrival_time']) ? $_POST['arrival_time']:NULL;
-        $departure_time = isset($_POST['departure_time']) ? $_POST['departure_time']:NULL; 
+        $arrival_time = date("H:i", strtotime($_POST['arrival_time']));
+        $departure_time = date("H:i", strtotime($_POST['departure_time']));
         $health = isset($_POST['health']) ? $_POST['health']:NULL;       
         $log = isset($_POST['log']) ? $_POST['log']:NULL;
         $IN_other = isset($_POST['IN_other']) ? $_POST['IN_other']:NULL;
@@ -145,45 +145,45 @@
         $date = $_SESSION['date'];
         $arrival_time = $_SESSION['arrival_time'];
         $departure_time = $_SESSION['departure_time'];
-        $health = 1;
-        $places = array_fill(0, 12, 0);
+        $health = '〇';
+        $places = array_fill(0, 12, NULL);
         $logs = $_SESSION['log'];
         foreach($logs as $log){
             if($log == 'IN401N'){
-                $places[0] = 1;
+                $places[0] = '〇';
             }
             if($log == 'IN501N'){
-                $places[1] = 1;
+                $places[1] = '〇';
             }
             if($log == 'IN505N'){
-                $places[2] = 1;
+                $places[2] = '〇';
             }
             if($log == 'IN418N'){
-                $places[3] = 1;
+                $places[3] = '〇';
             }
             if($log == 'IN419N'){
-                $places[4] = 1;
+                $places[4] = '〇';
             }
             if($log == 'IN603N'){
-                $places[5] = 1;
+                $places[5] = '〇';
             }
             if($log == 'IN601N'){
-                $places[6] = 1;
+                $places[6] = '〇';
             }
             if($log == 'IN409N'){
-                $places[7] = 1;
+                $places[7] = '〇';
             }
             if($log == 'IN412N'){
-                $places[8] = 1;
+                $places[8] = '〇';
             }
             if($log == '紫苑館'){
-                $places[9] = 1;
+                $places[9] = '〇';
             }
             if($log == '購買部'){
-                $places[10] = 1;
+                $places[10] = '〇';
             }
             if($log == '図書館'){
-                $places[11] = 1;
+                $places[11] = '〇';
             }
         }
         $IN_other = isset($_SESSION['IN_other']) ? $_SESSION['IN_other']:NULL;
@@ -194,7 +194,7 @@
         // ここでデータベースに登録する
         try{
             $stmt = $mysqli -> prepare("INSERT INTO time_and_place (name, date, health, arrival_time, departure_time, IN401N, IN501N, IN505N, IN418N, IN419N, IN603N, IN601N, IN409N, IN412N, IN_other, dining, purchasing, library, other) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt -> bind_param('ssissiiiiiiiiisiiis', $name, $date, $health, $arrival_time, $departure_time, $places[0], $places[1], $places[2], $places[3], $places[4], $places[5], $places[6], $places[7], $places[8], $IN_other, $places[9], $places[10], $places[11], $other);
+            $stmt -> bind_param('sssssssssssssssssss', $name, $date, $health, $arrival_time, $departure_time, $places[0], $places[1], $places[2], $places[3], $places[4], $places[5], $places[6], $places[7], $places[8], $IN_other, $places[9], $places[10], $places[11], $other);
             $stmt -> execute();
         }catch(PDOException $e){
             //トランザクション取り消し
