@@ -10,6 +10,7 @@
 </head>
 
 <?php
+    session_start();
     function h($str)
     {
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
@@ -44,11 +45,12 @@
 
     // 並び替えたいキーを抽出
     foreach($logs as $key => $value){
-        $sort_keys[$key] = $value['date'];
+        $sort_keys_date[$key] = $value['date'];
+        $sort_keys_time[$key] = $value['arrival_time'];
     }
 
     // 並び替え
-    array_multisort($sort_keys, SORT_ASC, $logs);
+    array_multisort($sort_keys_date, SORT_ASC,$sort_keys_time, SORT_ASC, $logs);
 
     $logs = json_encode($logs);
     
@@ -111,7 +113,8 @@
         select_duration.onchange = changeDuration;  // 表示を変える
         let cells = [];  // 表示を変えた際に以前の表示を消す
         let data_number = 0; // 表示数を管理、これをもとに以前の表示を消す
-        let new_logs = []; // 表示するデータ        
+        let new_logs = []; // 表示するデータ   
+        let set_number;     
 
         const logs = JSON.parse('<?php echo $logs; ?>');
 
@@ -142,6 +145,7 @@
 
         // 全期間が選択されたとき
         function setAllduration(){
+            set_number = '0';
             new_logs = logs;
             new_logs.forEach((log) => {
                 // 1行追加
@@ -158,71 +162,73 @@
 
                 // 健康チェック
                 var healthTd = document.createElement('td');
-                if(log['health'] == 1){
-                    var healthText = document.createTextNode('○');
+                if(log['health'] != null){
+                    var healthText = document.createTextNode('〇');
                 }
 
                 // 到着時間
                 var arrivalTd = document.createElement('td');
-                var arrivalText = document.createTextNode(log['arrival_time']);
+                const arrival_time = log['arrival_time'].split(':');
+                var arrivalText = document.createTextNode(arrival_time[0]+':'+arrival_time[1]);
 
                 // 出立時間
                 var departureTd = document.createElement('td');
-                var departureText = document.createTextNode(log['departure_time']);
+                const departure_time = log['departure_time'].split(':');
+                var departureText = document.createTextNode(departure_time[0]+':'+departure_time[1]);
 
                 // 来校場所チェック
                 // IN401N
                 var IN401Td = document.createElement('td');
-                if(log['IN401N'] == 1){
-                    var IN401Text = document.createTextNode('○');
+                if(log['IN401N'] != null){
+                    var IN401Text = document.createTextNode('〇');
                 }
 
                 // IN501N
                 var IN501Td = document.createElement('td');
-                if(log['IN501N'] == 1){
-                    var IN501Text = document.createTextNode('○');
+                if(log['IN501N'] != null){
+                    var IN501Text = document.createTextNode('〇');
                 }
 
                 // IN505N
                 var IN505Td = document.createElement('td');
-                if(log['IN505N'] == 1){
-                    var IN505Text = document.createTextNode('○');
+                if(log['IN505N'] != null){
+                    var IN505Text = document.createTextNode('〇');
                 }
 
                 // IN418N
                 var IN418Td = document.createElement('td');
-                if(log['IN418N'] == 1){
-                    var IN418Text = document.createTextNode('○');
+                if(log['IN418N'] != null){
+                    var IN418Text = document.createTextNode('〇');
                 }
 
                 // IN419N
                 var IN419Td = document.createElement('td');
-                if(log['IN419N'] == 1){
-                    var IN419Text = document.createTextNode('○');
+                if(log['IN419N'] != null){
+                    var IN419Text = document.createTextNode('〇');
                 }
 
                 // IN601N
                 var IN601Td = document.createElement('td');
-                if(log['IN601N'] == 1){
-                    var IN601Text = document.createTextNode('○');
+                if(log['IN601N'] != null){
+                    var IN601Text = document.createTextNode('〇');
                 }
 
                 // IN603N
                 var IN603Td = document.createElement('td');
-                if(log['IN603N'] == 1){
-                    var IN603Text = document.createTextNode('○');
+                if(log['IN603N'] != null){
+                    var IN603Text = document.createTextNode('〇');
                 }
 
                 // IN409N
                 var IN409Td = document.createElement('td');
-                if(log['IN409N'] == 1){
-                    var IN409Text = document.createTextNode('○');
+                if(log['IN409N'] != null){
+                    var IN409Text = document.createTextNode('〇');
                 }
 
                 // IN412N
                 var IN412Td = document.createElement('td');
-                if(log['IN412N'] == 1){
-                    var IN412Text = document.createTextNode('○');
+                if(log['IN412N'] != null){
+                    var IN412Text = document.createTextNode('〇');
                 }
 
                 // 医心館その他
@@ -233,20 +239,20 @@
                 
                 // 紫苑館
                 var diningTd = document.createElement('td');
-                if(log['dining'] == 1){
-                    var diningText = document.createTextNode('○');
+                if(log['dining'] != null){
+                    var diningText = document.createTextNode('〇');
                 }
 
                 // 購買部
                 var purchasingTd = document.createElement('td');
-                if(log['purchasing'] == 1){
-                    var purchasingText = document.createTextNode('○');
+                if(log['purchasing'] != null){
+                    var purchasingText = document.createTextNode('〇');
                 }
 
                 // 図書館/LC
                 var libraryTd = document.createElement('td');
-                if(log['library'] == 1){
-                    var libraryText = document.createTextNode('○');
+                if(log['library'] != null){
+                    var libraryText = document.createTextNode('〇');
                 }
 
                 // その他その他
@@ -350,6 +356,7 @@
 
         // 2週間前が選択されたとき
         function set2weeks(){
+            set_number = '1';
             var date_2weeks = new Date();
             date_2weeks.setDate(date_2weeks.getDate()-14); // 2週間前の日付を取得
 
@@ -375,71 +382,73 @@
 
                 // 健康チェック
                 var healthTd = document.createElement('td');
-                if(log['health'] == 1){
-                    var healthText = document.createTextNode('○');
+                if(log['health'] != null){
+                    var healthText = document.createTextNode('〇');
                 }
 
                 // 到着時間
                 var arrivalTd = document.createElement('td');
-                var arrivalText = document.createTextNode(log['arrival_time']);
+                const arrival_time = log['arrival_time'].split(':');
+                var arrivalText = document.createTextNode(arrival_time[0]+':'+arrival_time[1]);
 
                 // 出立時間
                 var departureTd = document.createElement('td');
-                var departureText = document.createTextNode(log['departure_time']);
+                const departure_time = log['departure_time'].split(':');
+                var departureText = document.createTextNode(departure_time[0]+':'+departure_time[1]);
 
                 // 来校場所チェック
                 // IN401N
                 var IN401Td = document.createElement('td');
-                if(log['IN401N'] == 1){
-                    var IN401Text = document.createTextNode('○');
+                if(log['IN401N'] != null){
+                    var IN401Text = document.createTextNode('〇');
                 }
 
                 // IN501N
                 var IN501Td = document.createElement('td');
-                if(log['IN501N'] == 1){
-                    var IN501Text = document.createTextNode('○');
+                if(log['IN501N'] != null){
+                    var IN501Text = document.createTextNode('〇');
                 }
 
                 // IN505N
                 var IN505Td = document.createElement('td');
-                if(log['IN505N'] == 1){
-                    var IN505Text = document.createTextNode('○');
+                if(log['IN505N'] != null){
+                    var IN505Text = document.createTextNode('〇');
                 }
 
                 // IN418N
                 var IN418Td = document.createElement('td');
-                if(log['IN418N'] == 1){
-                    var IN418Text = document.createTextNode('○');
+                if(log['IN418N'] != null){
+                    var IN418Text = document.createTextNode('〇');
                 }
 
                 // IN419N
                 var IN419Td = document.createElement('td');
-                if(log['IN419N'] == 1){
-                    var IN419Text = document.createTextNode('○');
+                if(log['IN419N'] != null){
+                    var IN419Text = document.createTextNode('〇');
                 }
 
                 // IN601N
                 var IN601Td = document.createElement('td');
-                if(log['IN601N'] == 1){
-                    var IN601Text = document.createTextNode('○');
+                if(log['IN601N'] != null){
+                    var IN601Text = document.createTextNode('〇');
                 }
 
                 // IN603N
                 var IN603Td = document.createElement('td');
-                if(log['IN603N'] == 1){
-                    var IN603Text = document.createTextNode('○');
+                if(log['IN603N'] != null){
+                    var IN603Text = document.createTextNode('〇');
                 }
 
                 // IN409N
                 var IN409Td = document.createElement('td');
-                if(log['IN409N'] == 1){
-                    var IN409Text = document.createTextNode('○');
+                if(log['IN409N'] != null){
+                    var IN409Text = document.createTextNode('〇');
                 }
 
                 // IN412N
                 var IN412Td = document.createElement('td');
-                if(log['IN412N'] == 1){
-                    var IN412Text = document.createTextNode('○');
+                if(log['IN412N'] != null){
+                    var IN412Text = document.createTextNode('〇');
                 }
 
                 // 医心館その他
@@ -450,20 +459,20 @@
                 
                 // 紫苑館
                 var diningTd = document.createElement('td');
-                if(log['dining'] == 1){
-                    var diningText = document.createTextNode('○');
+                if(log['dining'] != null){
+                    var diningText = document.createTextNode('〇');
                 }
 
                 // 購買部
                 var purchasingTd = document.createElement('td');
-                if(log['purchasing'] == 1){
-                    var purchasingText = document.createTextNode('○');
+                if(log['purchasing'] != null){
+                    var purchasingText = document.createTextNode('〇');
                 }
 
                 // 図書館/LC
                 var libraryTd = document.createElement('td');
-                if(log['library'] == 1){
-                    var libraryText = document.createTextNode('○');
+                if(log['library'] != null){
+                    var libraryText = document.createTextNode('〇');
                 }
 
                 // その他その他
@@ -567,6 +576,7 @@
 
         // 1ヵ月前が選択されたとき
         function set1month(){
+            set_number = '2';
             var date_1month = new Date()
             date_1month.setMonth(date_1month.getMonth()-1) // 1ヵ月前の日付を取得
 
@@ -592,71 +602,73 @@
 
                 // 健康チェック
                 var healthTd = document.createElement('td');
-                if(log['health'] == 1){
-                    var healthText = document.createTextNode('○');
+                if(log['health'] != null){
+                    var healthText = document.createTextNode('〇');
                 }
 
                 // 到着時間
                 var arrivalTd = document.createElement('td');
-                var arrivalText = document.createTextNode(log['arrival_time']);
+                const arrival_time = log['arrival_time'].split(':');
+                var arrivalText = document.createTextNode(arrival_time[0]+':'+arrival_time[1]);
 
                 // 出立時間
                 var departureTd = document.createElement('td');
-                var departureText = document.createTextNode(log['departure_time']);
+                const departure_time = log['departure_time'].split(':');
+                var departureText = document.createTextNode(departure_time[0]+':'+departure_time[1]);
 
                 // 来校場所チェック
                 // IN401N
                 var IN401Td = document.createElement('td');
-                if(log['IN401N'] == 1){
-                    var IN401Text = document.createTextNode('○');
+                if(log['IN401N'] != null){
+                    var IN401Text = document.createTextNode('〇');
                 }
 
                 // IN501N
                 var IN501Td = document.createElement('td');
-                if(log['IN501N'] == 1){
-                    var IN501Text = document.createTextNode('○');
+                if(log['IN501N'] != null){
+                    var IN501Text = document.createTextNode('〇');
                 }
 
                 // IN505N
                 var IN505Td = document.createElement('td');
-                if(log['IN505N'] == 1){
-                    var IN505Text = document.createTextNode('○');
+                if(log['IN505N'] != null){
+                    var IN505Text = document.createTextNode('〇');
                 }
 
                 // IN418N
                 var IN418Td = document.createElement('td');
-                if(log['IN418N'] == 1){
-                    var IN418Text = document.createTextNode('○');
+                if(log['IN418N'] != null){
+                    var IN418Text = document.createTextNode('〇');
                 }
 
                 // IN419N
                 var IN419Td = document.createElement('td');
-                if(log['IN419N'] == 1){
-                    var IN419Text = document.createTextNode('○');
+                if(log['IN419N'] != null){
+                    var IN419Text = document.createTextNode('〇');
                 }
 
                 // IN601N
                 var IN601Td = document.createElement('td');
-                if(log['IN601N'] == 1){
-                    var IN601Text = document.createTextNode('○');
+                if(log['IN601N'] != null){
+                    var IN601Text = document.createTextNode('〇');
                 }
 
                 // IN603N
                 var IN603Td = document.createElement('td');
-                if(log['IN603N'] == 1){
-                    var IN603Text = document.createTextNode('○');
+                if(log['IN603N'] != null){
+                    var IN603Text = document.createTextNode('〇');
                 }
 
                 // IN409N
                 var IN409Td = document.createElement('td');
-                if(log['IN409N'] == 1){
-                    var IN409Text = document.createTextNode('○');
+                if(log['IN409N'] != null){
+                    var IN409Text = document.createTextNode('〇');
                 }
 
                 // IN412N
                 var IN412Td = document.createElement('td');
-                if(log['IN412N'] == 1){
-                    var IN412Text = document.createTextNode('○');
+                if(log['IN412N'] != null){
+                    var IN412Text = document.createTextNode('〇');
                 }
 
                 // 医心館その他
@@ -667,20 +679,20 @@
                 
                 // 紫苑館
                 var diningTd = document.createElement('td');
-                if(log['dining'] == 1){
-                    var diningText = document.createTextNode('○');
+                if(log['dining'] != null){
+                    var diningText = document.createTextNode('〇');
                 }
 
                 // 購買部
                 var purchasingTd = document.createElement('td');
-                if(log['purchasing'] == 1){
-                    var purchasingText = document.createTextNode('○');
+                if(log['purchasing'] != null){
+                    var purchasingText = document.createTextNode('〇');
                 }
 
                 // 図書館/LC
                 var libraryTd = document.createElement('td');
-                if(log['library'] == 1){
-                    var libraryText = document.createTextNode('○');
+                if(log['library'] != null){
+                    var libraryText = document.createTextNode('〇');
                 }
 
                 // その他その他
@@ -784,6 +796,7 @@
 
         // 1年前が選択されたとき
         function set1year(){
+            set_number = '3';
             var date_1year = new Date()
             date_1year.setFullYear(date_1year.getFullYear()-1) // 1年前の日付を取得
 
@@ -809,71 +822,73 @@
 
                 // 健康チェック
                 var healthTd = document.createElement('td');
-                if(log['health'] == 1){
-                    var healthText = document.createTextNode('○');
+                if(log['health'] != null){
+                    var healthText = document.createTextNode('〇');
                 }
 
                 // 到着時間
                 var arrivalTd = document.createElement('td');
-                var arrivalText = document.createTextNode(log['arrival_time']);
+                const arrival_time = log['arrival_time'].split(':');
+                var arrivalText = document.createTextNode(arrival_time[0]+':'+arrival_time[1]);
 
                 // 出立時間
                 var departureTd = document.createElement('td');
-                var departureText = document.createTextNode(log['departure_time']);
+                const departure_time = log['departure_time'].split(':');
+                var departureText = document.createTextNode(departure_time[0]+':'+departure_time[1]);
 
                 // 来校場所チェック
                 // IN401N
                 var IN401Td = document.createElement('td');
-                if(log['IN401N'] == 1){
-                    var IN401Text = document.createTextNode('○');
+                if(log['IN401N'] != null){
+                    var IN401Text = document.createTextNode('〇');
                 }
 
                 // IN501N
                 var IN501Td = document.createElement('td');
-                if(log['IN501N'] == 1){
-                    var IN501Text = document.createTextNode('○');
+                if(log['IN501N'] != null){
+                    var IN501Text = document.createTextNode('〇');
                 }
 
                 // IN505N
                 var IN505Td = document.createElement('td');
-                if(log['IN505N'] == 1){
-                    var IN505Text = document.createTextNode('○');
+                if(log['IN505N'] != null){
+                    var IN505Text = document.createTextNode('〇');
                 }
 
                 // IN418N
                 var IN418Td = document.createElement('td');
-                if(log['IN418N'] == 1){
-                    var IN418Text = document.createTextNode('○');
+                if(log['IN418N'] != null){
+                    var IN418Text = document.createTextNode('〇');
                 }
 
                 // IN419N
                 var IN419Td = document.createElement('td');
-                if(log['IN419N'] == 1){
-                    var IN419Text = document.createTextNode('○');
+                if(log['IN419N'] != null){
+                    var IN419Text = document.createTextNode('〇');
                 }
 
                 // IN601N
                 var IN601Td = document.createElement('td');
-                if(log['IN601N'] == 1){
-                    var IN601Text = document.createTextNode('○');
+                if(log['IN601N'] != null){
+                    var IN601Text = document.createTextNode('〇');
                 }
 
                 // IN603N
                 var IN603Td = document.createElement('td');
-                if(log['IN603N'] == 1){
-                    var IN603Text = document.createTextNode('○');
+                if(log['IN603N'] != null){
+                    var IN603Text = document.createTextNode('〇');
                 }
 
                 // IN409N
                 var IN409Td = document.createElement('td');
-                if(log['IN409N'] == 1){
-                    var IN409Text = document.createTextNode('○');
+                if(log['IN409N'] != null){
+                    var IN409Text = document.createTextNode('〇');
                 }
 
                 // IN412N
                 var IN412Td = document.createElement('td');
-                if(log['IN412N'] == 1){
-                    var IN412Text = document.createTextNode('○');
+                if(log['IN412N'] != null){
+                    var IN412Text = document.createTextNode('〇');
                 }
 
                 // 医心館その他
@@ -884,20 +899,20 @@
                 
                 // 紫苑館
                 var diningTd = document.createElement('td');
-                if(log['dining'] == 1){
-                    var diningText = document.createTextNode('○');
+                if(log['dining'] != null){
+                    var diningText = document.createTextNode('〇');
                 }
 
                 // 購買部
                 var purchasingTd = document.createElement('td');
-                if(log['purchasing'] == 1){
-                    var purchasingText = document.createTextNode('○');
+                if(log['purchasing'] != null){
+                    var purchasingText = document.createTextNode('〇');
                 }
 
                 // 図書館/LC
                 var libraryTd = document.createElement('td');
-                if(log['library'] == 1){
-                    var libraryText = document.createTextNode('○');
+                if(log['library'] != null){
+                    var libraryText = document.createTextNode('〇');
                 }
 
                 // その他その他
@@ -1004,9 +1019,8 @@
             const url = './downloadData.php'; // 通信先
             const req = new XMLHttpRequest(); // 通信用オブジェクト
         
-            // 取得した情報をもとにオブジェクトを作る
             const data = {logs: new_logs};
-        
+    
             req.onreadystatechange = function() {
               if(req.readyState == 4 && req.status == 200) {
                 alert("ダウンロードできたと思います");
