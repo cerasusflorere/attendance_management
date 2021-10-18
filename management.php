@@ -57,15 +57,16 @@
 ?>
 
 <body>
-    <!-- 検索期間選択部分 -->
-    <div class='duration-select-area' id='duration-area'>
-        <select name='duration' id='duration'>
-            <option value='all'>全期間</option>
-            <option value='week2'>2週間</option>
-            <option value='month1'>1ヵ月</option>
-            <option value='year1'>1年</option>
-        </select>
-    </div>
+    <div class='log-page-area'>
+        <!-- 検索期間選択部分 -->
+        <div class='duration-select-area' id='duration-area'>
+            <select name='duration' id='duration'>
+                <option value='all'>全期間</option>
+                <option value='week2'>2週間</option>
+                <option value='month1'>1ヵ月</option>
+                <option value='year1'>1年</option>
+            </select>
+        </div>
     
     
         <!-- ダウンロードボタン -->
@@ -73,38 +74,41 @@
             <button class='download-button' onclick="downloadData()">ダウンロード</button>
         </div>
     
+        <div class='log-area'>
+            <!-- ログ表示部分 -->
+            <table border="1" id='table'>
+                <tr>
+                    <th colspan="5"></th>
+                    <th colspan="10" class='green'>医心館</th>
+                    <th colspan="4" class='blue'>その他</th>
+                </tr>
 
-    <!-- ログ表示部分 -->
-    <table border="1" id='table'>
-        <tr>
-            <th colspan="5"></th>
-            <th colspan="10">医心館</th>
-            <th colspan="4">その他</th>
-        </tr>
-        <tr>
-            <th>名前</th>
-            <th>日付</th>
-            <th>健康チェック</th>
-            <th>その日医心館に最初に入館した時間</th>
-            <th>帰宅のために医心館から退館した時間</th>
-            <th>IN401N</th>
-            <th>IN501N</th>
-            <th>IN505N</th>
-            <th>IN418N（小早川）</th>
-            <th>IN419N（早見）</th>
-            <th>コウモリ舎</th>
-            <th>サル・ネズミ舎</th>
-            <th>IN409N</th>
-            <th>IN412N</th>
-            <th>その他</th>
-            <th>紫苑館</th>
-            <th>購買部</th>
-            <th>図書館/LC</th>
-            <th>その他</th>
-        </tr>
+                <tr>
+                    <th class='table-name'>名前</th>
+                    <th class='table-date'>日付</th>
+                    <th class='table-health'>健康チェック</th>
+                    <th class='table-time red'>その日医心館に最初に入館した時間</th>
+                    <th class='table-time red'>帰宅のために医心館から退館した時間</th>
+                    <th class='table-cell green'>IN401N</th>
+                    <th class='table-cell green'>IN501N</th>
+                    <th class='table-cell green'>IN505N</th>
+                    <th class='table-cell green'>IN418N（小早川）</th>
+                    <th class='table-cell green'>IN419N（早見）</th>
+                    <th class='table-cell green'>コウモリ舎</th>
+                    <th class='table-cell green'>サル・ネズミ舎</th>
+                    <th class='table-cell green'>IN409N</th>
+                    <th class='table-cell green'>IN412N</th>
+                    <th class='table-other green'>その他</th>
+                    <th class='table-cell blue'>紫苑館</th>
+                    <th class='table-cell blue'>購買部</th>
+                    <th class='table-cell blue'>図書館/LC</th>
+                    <th class='table-other blue'>その他</th>
+                </tr>
+        </table>
+        </div>
         
-    </table>
-
+    </div>
+    
     
     <script>
         window.onload = setAllduration;
@@ -155,10 +159,12 @@
                 // 名前
                 var nameTd = document.createElement('td');
                 var nameText = document.createTextNode(log['name']);
+                nameTd.className = 'fixed';
 
                 // 日付
                 var dateTd = document.createElement('td');
                 var dateText = document.createTextNode(log['date']);
+                dateTd.className = 'fixed';
 
                 // 健康チェック
                 var healthTd = document.createElement('td');
