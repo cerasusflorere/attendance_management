@@ -40,7 +40,7 @@
     $objSheet = $objSpreadsheet->getActiveSheet();
     
     // ウィンドウ固定
-    $objSheet->freezePane('B3');
+    $objSheet->freezePane('C3');
 
     // スタイルオブジェクト取得([A2:S2]セル)
     $objStyle = $objSheet->getStyle('A2:S2');
