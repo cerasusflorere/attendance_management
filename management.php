@@ -168,13 +168,11 @@
 
                 // 到着時間
                 var arrivalTd = document.createElement('td');
-                const arrival_time = log['arrival_time'].split(':');
-                var arrivalText = document.createTextNode(arrival_time[0]+':'+arrival_time[1]);
+                var arrivalText = document.createTextNode(log['arrival_time']);
 
                 // 出立時間
                 var departureTd = document.createElement('td');
-                const departure_time = log['departure_time'].split(':');
-                var departureText = document.createTextNode(departure_time[0]+':'+departure_time[1]);
+                var departureText = document.createTextNode(log['departure_time']);
 
                 // 来校場所チェック
                 // IN401N
@@ -388,13 +386,11 @@
 
                 // 到着時間
                 var arrivalTd = document.createElement('td');
-                const arrival_time = log['arrival_time'].split(':');
-                var arrivalText = document.createTextNode(arrival_time[0]+':'+arrival_time[1]);
+                var arrivalText = document.createTextNode(log['arrival_time']);
 
                 // 出立時間
                 var departureTd = document.createElement('td');
-                const departure_time = log['departure_time'].split(':');
-                var departureText = document.createTextNode(departure_time[0]+':'+departure_time[1]);
+                var departureText = document.createTextNode(log['departure_time']);
 
                 // 来校場所チェック
                 // IN401N
@@ -608,13 +604,11 @@
 
                 // 到着時間
                 var arrivalTd = document.createElement('td');
-                const arrival_time = log['arrival_time'].split(':');
-                var arrivalText = document.createTextNode(arrival_time[0]+':'+arrival_time[1]);
+                var arrivalText = document.createTextNode(log['arrival_time']);
 
                 // 出立時間
                 var departureTd = document.createElement('td');
-                const departure_time = log['departure_time'].split(':');
-                var departureText = document.createTextNode(departure_time[0]+':'+departure_time[1]);
+                var departureText = document.createTextNode(log['departure_time']);
 
                 // 来校場所チェック
                 // IN401N
@@ -828,13 +822,11 @@
 
                 // 到着時間
                 var arrivalTd = document.createElement('td');
-                const arrival_time = log['arrival_time'].split(':');
-                var arrivalText = document.createTextNode(arrival_time[0]+':'+arrival_time[1]);
+                var arrivalText = document.createTextNode(log['arrival_time']);
 
                 // 出立時間
                 var departureTd = document.createElement('td');
-                const departure_time = log['departure_time'].split(':');
-                var departureText = document.createTextNode(departure_time[0]+':'+departure_time[1]);
+                var departureText = document.createTextNode(log['departure_time']);
 
                 // 来校場所チェック
                 // IN401N
