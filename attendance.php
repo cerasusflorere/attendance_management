@@ -141,67 +141,71 @@
 
     // 登録する(btn_submit)を押した後の処理
     if(isset($_POST['btn_submit'])){
-        $name = $_SESSION['name'];
-        $date = $_SESSION['date'];
-        $arrival_time = $_SESSION['arrival_time'];
-        $departure_time = $_SESSION['departure_time'];
-        $health = '〇';
-        $places = array_fill(0, 12, NULL);
-        $logs = $_SESSION['log'];
-        foreach($logs as $log){
-            if($log == 'IN401N'){
-                $places[0] = '〇';
+        if($_SESSION){
+            $name = $_SESSION['name'];
+            $date = $_SESSION['date'];
+            $arrival_time = $_SESSION['arrival_time'];
+            $departure_time = $_SESSION['departure_time'];
+            $health = '〇';
+            $places = array_fill(0, 12, NULL);
+            $logs = $_SESSION['log'];
+            foreach($logs as $log){
+                if($log == 'IN401N'){
+                    $places[0] = '〇';
+                }
+                if($log == 'IN501N'){
+                    $places[1] = '〇';
+                }
+                if($log == 'IN505N'){
+                    $places[2] = '〇';
+                }
+                if($log == 'IN418N'){
+                    $places[3] = '〇';
+                }
+                if($log == 'IN419N'){
+                    $places[4] = '〇';
+                }
+                if($log == 'IN603N'){
+                    $places[5] = '〇';
+                }
+                if($log == 'IN601N'){
+                    $places[6] = '〇';
+                }
+                if($log == 'IN409N'){
+                    $places[7] = '〇';
+                }
+                if($log == 'IN412N'){
+                    $places[8] = '〇';
+                }
+                if($log == '紫苑館'){
+                    $places[9] = '〇';
+                }
+                if($log == '購買部'){
+                    $places[10] = '〇';
+                }
+                if($log == '図書館'){
+                    $places[11] = '〇';
+                }
             }
-            if($log == 'IN501N'){
-                $places[1] = '〇';
-            }
-            if($log == 'IN505N'){
-                $places[2] = '〇';
-            }
-            if($log == 'IN418N'){
-                $places[3] = '〇';
-            }
-            if($log == 'IN419N'){
-                $places[4] = '〇';
-            }
-            if($log == 'IN603N'){
-                $places[5] = '〇';
-            }
-            if($log == 'IN601N'){
-                $places[6] = '〇';
-            }
-            if($log == 'IN409N'){
-                $places[7] = '〇';
-            }
-            if($log == 'IN412N'){
-                $places[8] = '〇';
-            }
-            if($log == '紫苑館'){
-                $places[9] = '〇';
-            }
-            if($log == '購買部'){
-                $places[10] = '〇';
-            }
-            if($log == '図書館'){
-                $places[11] = '〇';
-            }
-        }
-        $IN_other = isset($_SESSION['IN_other']) ? $_SESSION['IN_other']:NULL;
-        $other = isset($_SESSION['other']) ? $_SESSION['other']:NULL;
+            $IN_other = isset($_SESSION['IN_other']) ? $_SESSION['IN_other']:NULL;
+            $other = isset($_SESSION['other']) ? $_SESSION['other']:NULL;
 
-        $id = 1;
-
-        // ここでデータベースに登録する
-        try{
-            $stmt = $mysqli -> prepare("INSERT INTO time_and_place (name, date, health, arrival_time, departure_time, IN401N, IN501N, IN505N, IN418N, IN419N, IN603N, IN601N, IN409N, IN412N, IN_other, dining, purchasing, library, other) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
-            $stmt -> bind_param('sssssssssssssssssss', $name, $date, $health, $arrival_time, $departure_time, $places[0], $places[1], $places[2], $places[3], $places[4], $places[5], $places[6], $places[7], $places[8], $IN_other, $places[9], $places[10], $places[11], $other);
-            $stmt -> execute();
-        }catch(PDOException $e){
-            //トランザクション取り消し
-            $pdo -> rollBack();
-            $errors['error'] = "もう一度やり直してください。";
-            print('Error:'.$e->getMessage());
+            // ここでデータベースに登録する
+            try{
+                $stmt = $mysqli -> prepare("INSERT INTO time_and_place (name, date, health, arrival_time, departure_time, IN401N, IN501N, IN505N, IN418N, IN419N, IN603N, IN601N, IN409N, IN412N, IN_other, dining, purchasing, library, other) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
+                $stmt -> bind_param('sssssssssssssssssss', $name, $date, $health, $arrival_time, $departure_time, $places[0], $places[1], $places[2], $places[3], $places[4], $places[5], $places[6], $places[7], $places[8], $IN_other, $places[9], $places[10], $places[11], $other);
+                $stmt -> execute();
+                $_SESSION = array();
+            }catch(PDOException $e){
+                //トランザクション取り消し
+                $pdo -> rollBack();
+                $errors['error'] = "もう一度やり直してください。";
+                print('Error:'.$e->getMessage());
+            }
+        }else{
+            
         }
+        
     }
 ?> 
 
@@ -209,12 +213,22 @@
     <div class='register-main-area'>
         <!-- page3 完了画面 -->
         <?php if(isset($_POST['btn_submit']) && count($errors) == 0): ?>
-            <div class='success-message'>
-                登録しました。
-            </div>   　       
+            <div class='answers-each-area finish-message-area'>
+                <div class='success-message'>
+                    登録しました。
+                </div>
+                <div class='login-botton-area'>
+                    <a class='login-button' href='management.php'><i class="fas fa-eye fa-fw"></i>閲覧</a>
+                    <a class='login-button' href='attendance.php'><i class="fas fa-pen-square fa-fw"></i>登録</a>
+                </div>   　    
+            </div>
+              
 
         <!-- page2 確認画面 -->
         <?php elseif(isset($_POST['btn_confirm']) && count($errors) == 0): ?>
+            <div class='home-botton-area'>
+                    <a class='login-button home' href='login.php'><i class="fas fa-home fa-fw"></i>ホーム</a>
+            </div> 
             <p class='confirm-message'>以下の情報を登録します。</p>
             <form action='' method='post'>
                 <div class='answers-each-area'>
@@ -240,8 +254,11 @@
                               echo $_SESSION['other'];
                           } ?>
                 </div>
-                <input type='submit' name='btn_back' class='submit-button' value='戻る'>
-                <input type='submit' name='btn_submit' class='submit-button' value='登録する'>
+                <div class='login-button-area'>
+                    <input type='submit' name='btn_back' class='submit-button' value='戻る'>
+                    <input type='submit' name='btn_submit' class='submit-button' value='登録する'>
+                </div>
+                
             </from>
 
         <!-- page1 登録画面 -->
@@ -257,6 +274,9 @@
             <?php endif; ?>
 
             <form action='' method='post'>
+                <div class='home-botton-area'>
+                    <a class='login-button home' href='login.php'><i class="fas fa-home fa-fw"></i>ホーム</a>
+                </div> 
                 <!-- 学年や名前を選ぶ -->
                 <div class='answers-each-area'>
                     <div>
@@ -333,7 +353,7 @@
                         </div>
                         <div class='answer-each'>
                             <label class='attendance-label'>その他</label>
-                            <input type='text' id='IN_other' name='IN_other' class='attendance-text'>
+                            <input type='text' id='IN_other' name='IN_other' class='attendance-text' value='<?php if( !empty($_SESSION['IN_other']) ){ echo $_SESSION['IN_other']; } ?>'>
                         </div>
                     </div>
    
@@ -353,12 +373,12 @@
                         </div>
                         <div class='answer-each'>
                             <label class='attendance-label'>その他</label>
-                            <input type='text' id='other' name='other' class='attendance-text'>                        
+                            <input type='text' id='other' name='other' class='attendance-text' value='<?php if( !empty($_SESSION['other']) ){ echo $_SESSION['other']; } ?>'>                        
                         </div>
                     </div>
                 </div>
                 <input type='submit' name='btn_confirm' class='submit-button' value='確認する'>
-            </form>
+            </form>            
         <?php endif; ?>
     </div>
 
