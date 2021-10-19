@@ -32,8 +32,9 @@
     use PhpOffice\PhpSpreadsheet\Spreadsheet;
     use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
     use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
-    use PhpOffice\PhpSpreadsheet\Style;
     use PhpOffice\PhpSpreadsheet\Style\Border;
+    use PhpOffice\PhpSpreadsheet\Style\Color;
+    use PhpOffice\PhpSpreadsheet\Style\Fill;
  
     // Spreadsheetオブジェクト生成
     $objSpreadsheet = new Spreadsheet();
@@ -47,6 +48,35 @@
     $objStyle = $objSheet->getStyle('A2:S2');
     $objBorders = $objStyle->getBorders();
     $objBorders->getBottom()->setBorderStyle(Border::BORDER_THICK);
+
+    // 時間について赤字に([D2:E2]セル)
+    $objStyle = $objSheet->getStyle('D2:E2');
+    $objStyle->getFont()->getColor()->setARGB(Color::COLOR_RED);
+
+    // 医心館についてセルを緑色に([F1:O2]セル)
+    $objStyle = $objSheet->getStyle(('F1:O2'));
+    $objFill = $objStyle->getFill();
+    $objFill->setFillType(Fill::FILL_SOLID);
+    $objFill->getStartColor()->setARGB('99cc99');
+
+    // その他についてセルを青色に([P1:S2]セル)
+    $objStyle = $objSheet->getStyle(('P1:S2'));
+    $objFill = $objStyle->getFill();
+    $objFill->setFillType(Fill::FILL_SOLID);
+    $objFill->getStartColor()->setARGB('99cccc');
+
+    // 罫線をつける([A1:S2]セル)
+    $objStyle = $objSheet->getStyle('A1:S2');  
+    $arrStyle = array(
+        'borders' => array(
+            'allBorders' => array(
+                            'borderStyle' => Border::BORDER_THICK,
+                            'color' => array( 'rgb' => 'dcdcdc' )
+                        )
+        )
+    );
+    //  セルの罫線スタイル設定
+    $objStyle->applyFromArray($arrStyle);
 
     // [A1:E1]セルを結合
     $objSheet->mergeCells('A1:E1');
