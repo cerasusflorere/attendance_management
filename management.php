@@ -58,6 +58,7 @@
 
 <body>
     <div class='log-page-area'>
+        <a class='login-button home management-page-button' href='login.php'><i class="fas fa-home fa-fw"></i>ホーム</a>
         <!-- 検索期間選択部分 -->
         <div class='duration-select-area' id='duration-area'>
             <select name='duration' id='duration'>
@@ -71,7 +72,7 @@
     
         <!-- ダウンロードボタン -->
         <div class='download-button-area'>
-            <button class='download-button' onclick="downloadData()">ダウンロード</button>
+            <button class='download-button' onclick="downloadData()"><i class="fas fa-download fa-fw"></i>ダウンロード</button>
         </div>
     
         <div class='log-area'>
