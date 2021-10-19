@@ -20,11 +20,12 @@
     $logs_origin = array(json_decode($json, true));
     
 
-    $logs = array();
-    
+    $logs = array();    
     foreach($logs_origin[0]['logs'] as $log_origin){
         $logs[] = $log_origin;
     }
+
+    $set_number = $logs_origin[0]['set_number'];
 
     // ライブラリ読込
     require '../vendor/autoload.php';
@@ -182,6 +183,23 @@
     // XLSX形式オブジェクト生成
     $objWriter = new Xlsx($objSpreadsheet);
     // ファイル書込み
-    $objWriter->save('test1-4.xlsx');
+    $date = date("Y-m-d" , $timestamp);
+    $set = '';
+    echo $set_number;
+    switch($set_number){
+        case '0':
+            $set = 'All';
+            break;
+        case '1':
+            $set = '2week';
+            break;
+        case '2':
+            $set = '1month';
+            break;
+        case '3':
+            $set = '1year';
+            break;
+    }
+    $objWriter->save('attendance_log_'.$date.'_'.$set.'.xlsx');
     exit();
 ?>
