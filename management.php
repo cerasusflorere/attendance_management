@@ -1017,7 +1017,7 @@
             const url = './downloadData.php'; // 通信先
             const req = new XMLHttpRequest(); // 通信用オブジェクト
         
-            const data = {logs: new_logs};
+            const data = {logs: new_logs, set_number: set_number};
     
             req.onreadystatechange = function() {
               if(req.readyState == 4 && req.status == 200) {
