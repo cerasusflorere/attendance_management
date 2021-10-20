@@ -159,16 +159,16 @@
                 if($log == 'IN505N'){
                     $places[2] = '〇';
                 }
-                if($log == 'IN418N'){
+                if($log == 'IN418N（小早川）'){
                     $places[3] = '〇';
                 }
-                if($log == 'IN419N'){
+                if($log == 'IN419N（早見）'){
                     $places[4] = '〇';
                 }
-                if($log == 'IN603N'){
+                if($log == 'IN603N（コウモリ舎）'){
                     $places[5] = '〇';
                 }
-                if($log == 'IN601N'){
+                if($log == 'IN601N（サル・ネズミ舎）'){
                     $places[6] = '〇';
                 }
                 if($log == 'IN409N'){
@@ -328,19 +328,19 @@
                             <label for='IN505' class='attendance-label'>IN505N</label>
                         </div>
                         <div class='answer-each'>
-                            <input type='checkbox' id='IN418' name='log[]' value='IN418N' class='attendance-check'>
+                            <input type='checkbox' id='IN418' name='log[]' value='IN418N（小早川）' class='attendance-check'>
                             <label for='IN418' class='attendance-label'>IN4I8N（小早川）</label>
                         </div>
                         <div class='answer-each'>
-                            <input type='checkbox' id='IN419' name='log[]' value='IN419N' class='attendance-check'>
+                            <input type='checkbox' id='IN419' name='log[]' value='IN419N（早見）' class='attendance-check'>
                             <label for='IN419' class='attendance-label'>IN419N（早見）</label>
                         </div>
                         <div class='answer-each'>
-                            <input type='checkbox' id='IN603' name='log[]' value='IN603N' class='attendance-check'>
+                            <input type='checkbox' id='IN603' name='log[]' value='IN603N（コウモリ舎）' class='attendance-check'>
                             <label for='IN603' class='attendance-label'>コウモリ舎</label>
                         </div>
                         <div class='answer-each'>
-                            <input type='checkbox' id='IN601' name='log[]' value='IN601N' class='attendance-check'>
+                            <input type='checkbox' id='IN601' name='log[]' value='IN601N（サル・ネズミ舎）' class='attendance-check'>
                             <label for='IN601' class='attendance-label'>サル・ネズミ舎</label>
                         </div>
                         <div class='answer-each'>
