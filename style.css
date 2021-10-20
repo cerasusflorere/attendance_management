@@ -124,6 +124,9 @@
     justify-content: space-around;
     align-items: center;
   }
+  form{
+    width: 100%;
+  }
   .answers-each-area{
     display: block;
     width: 30em;
@@ -225,6 +228,7 @@
     margin-right: auto;
   }
 
+
   /* ダウンロードページ */
   .log-page-area{
     margin: 1em;
@@ -259,7 +263,7 @@
   /* テーブル */
   .log-area{
     overflow: auto;
-    width: calc(100% + 53em);
+    width: calc(100% + 198%);
   }
   table {
     text-align: center;
@@ -310,4 +314,26 @@
   }
   .blue{
     background: #99cccc;
+  }
+
+
+  /* 695px以下に適用されるCSS（スマホ用） */
+  @media screen and (max-width: 695px) {
+    /* ホーム画面 */
+    .login-page {
+      width: 85%;
+    }
+    .login-title{
+      font-size: 1em;
+    }
+
+    /* 来校情報登録画面 */
+    .answers-each-area {
+      width: 80%;
+    }
+
+    /* ダウンロードページ */
+    .log-area{
+      width: calc(100% + 505%);
+    }
   }
