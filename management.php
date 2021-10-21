@@ -224,7 +224,7 @@
 
                 // 健康チェック
                 var healthTd = document.createElement('td');
-                if(log['health'] != null){
+                if(log['health'] == '〇'){
                     var healthText = document.createTextNode('〇');
                 }
 
@@ -253,6 +253,7 @@
                 var IN505Td = document.createElement('td');
                 if(log['IN505N'] != null){
                     var IN505Text = document.createTextNode('〇');
+                    console.log(nameText, IN501Text);
                 }
 
                 // IN418N
@@ -342,6 +343,7 @@
                     IN401Td.appendChild(IN401Text);
                 }                
                 cellsTr.appendChild(IN401Td);  // IN401
+                
 
                 if(IN501Text){
                     IN501Td.appendChild(IN501Text);
@@ -349,7 +351,7 @@
                 cellsTr.appendChild(IN501Td);  // IN501
 
                 if(IN505Text){
-                    healthTd.appendChild(IN505Text);
+                    IN505Td.appendChild(IN505Text);
                 }                
                 cellsTr.appendChild(IN505Td);  // IN505
 
