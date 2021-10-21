@@ -77,35 +77,40 @@
     
         <div class='log-area'>
             <!-- ログ表示部分 -->
-            <table border="1" id='table'>
-                <tr>
-                    <th colspan="5"></th>
-                    <th colspan="10" class='green'>医心館</th>
-                    <th colspan="4" class='blue'>その他</th>
-                </tr>
+            <table border="1" style='border-collapse: collapse;'>
+                <thead>
+                    <tr>
+                        <th colspan="5" class='white left'></th>
+                        <th colspan="10" class='green'>医心館</th>
+                        <th colspan="4" class='blue right'>その他</th>
+                    </tr>
 
-                <tr>
-                    <th class='table-name'>名前</th>
-                    <th class='table-date'>日付</th>
-                    <th class='table-health'>健康チェック</th>
-                    <th class='table-time red'>その日医心館に最初に入館した時間</th>
-                    <th class='table-time red'>帰宅のために医心館から退館した時間</th>
-                    <th class='table-cell green'>IN401N</th>
-                    <th class='table-cell green'>IN501N</th>
-                    <th class='table-cell green'>IN505N</th>
-                    <th class='table-cell green'>IN418N（小早川）</th>
-                    <th class='table-cell green'>IN419N（早見）</th>
-                    <th class='table-cell green'>コウモリ舎</th>
-                    <th class='table-cell green'>サル・ネズミ舎</th>
-                    <th class='table-cell green'>IN409N</th>
-                    <th class='table-cell green'>IN412N</th>
-                    <th class='table-other green'>その他</th>
-                    <th class='table-cell blue'>紫苑館</th>
-                    <th class='table-cell blue'>購買部</th>
-                    <th class='table-cell blue'>図書館/LC</th>
-                    <th class='table-other blue'>その他</th>
-                </tr>
-        </table>
+                    <tr>
+                        <th class='table-name white left'>名前</th>
+                        <th class='table-date white'>日付</th>
+                        <th class='table-health white bottom'>健康チェック</th>
+                        <th class='table-time white red bottom'>その日医心館に最初に入館した時間</th>
+                        <th class='table-time white red bottom'>帰宅のために医心館から退館した時間</th>
+                        <th class='table-cell green bottom'>IN401N</th>
+                        <th class='table-cell green bottom'>IN501N</th>
+                        <th class='table-cell green bottom'>IN505N</th>
+                        <th class='table-cell green bottom'>IN418N（小早川）</th>
+                        <th class='table-cell green bottom'>IN419N（早見）</th>
+                        <th class='table-cell green bottom'>コウモリ舎</th>
+                        <th class='table-cell green bottom'>サル・ネズミ舎</th>
+                        <th class='table-cell green bottom'>IN409N</th>
+                        <th class='table-cell green bottom'>IN412N</th>
+                        <th class='table-other green bottom'>その他</th>
+                        <th class='table-cell blue bottom'>紫苑館</th>
+                        <th class='table-cell blue bottom'>購買部</th>
+                        <th class='table-cell blue bottom'>図書館/LC</th>
+                        <th class='table-other blue right bottom'>その他</th>
+                    </tr>
+                </thead>
+                <tbody id='tbody'>
+
+                </tbody>
+            </table>
         </div>
         
     </div>
@@ -114,7 +119,7 @@
     <script>
         window.onload = setAllduration;
         let select_duration = document.getElementById('duration');
-        let table = document.getElementById('table');
+        let tbody = document.getElementById('tbody');
         select_duration.onchange = changeDuration;  // 表示を変える
         let cells = [];  // 表示を変えた際に以前の表示を消す
         let data_number = 0; // 表示数を管理、これをもとに以前の表示を消す
@@ -215,12 +220,12 @@
                 // 名前
                 var nameTd = document.createElement('td');
                 var nameText = document.createTextNode(log['name']);
-                nameTd.className = 'fixed';
+                nameTd.className = 'fixed fixed-name white left';
 
                 // 日付
                 var dateTd = document.createElement('td');
                 var dateText = document.createTextNode(log['date']);
-                dateTd.className = 'fixed';
+                dateTd.className = 'fixed fixed-date white right';
 
                 // 健康チェック
                 var healthTd = document.createElement('td');
@@ -253,7 +258,6 @@
                 var IN505Td = document.createElement('td');
                 if(log['IN505N'] != null){
                     var IN505Text = document.createTextNode('〇');
-                    console.log(nameText, IN501Text);
                 }
 
                 // IN418N
@@ -411,7 +415,7 @@
                 cellsTr.appendChild(otherTd);  // その他
 
 
-                table.appendChild(cellsTr);
+                tbody.appendChild(cellsTr);
                 data_number++;
             })
         } 
