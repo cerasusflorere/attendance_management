@@ -262,18 +262,23 @@
   }
   /* テーブル */
   .log-area{
-    overflow: auto;
-    width: calc(100% + 198%);
+    width: 127em;
   }
   table {
     text-align: center;
   }
-  th,
+  thead th,
   .fixed{
     position: sticky;
+  }
+  thead th{
+    z-index: 2;
+  }
+  thead tr:nth-child(1) th {
     top: 0;
-    left: 0;
-    z-index: 1;
+  }
+  thead tr:nth-child(2) th {
+    top: 1.5rem; /* 2行目は1行目の高さの位置に固定する */
   }
   th::before,
   .fixed::before{
@@ -283,10 +288,31 @@
     left: -1px;
     width: 100%;
     height: 100%;
-    border: 1px solid #ccc;
+    border: 1.5px solid #ccc;
+  }
+  thead tr:nth-child(2) th::before {
+    border-bottom-width: 3.0px;
+  }
+  thead tr:nth-child(1) th::before{
+    border-top-color: black;
+  }
+  .bottom::before{
+    border-bottom-color: black;
+  }
+  .left::before{
+    border-left-color: black;
+  }
+  .right::before{
+    border-right-color: black;
   }
   .fixed{
-    z-index: 2;
+    z-index: 1;
+  }
+  .fixed-name{
+    left: 0;
+  }
+  .fixed-date{
+    left: 12em;
   }
   .table-name{
     width: 12em;
@@ -305,6 +331,9 @@
   }
   .table-other{
     width: 8em;
+  }
+  .white{
+    background: white;
   }
   .red{
     color: red;
@@ -330,10 +359,5 @@
     /* 来校情報登録画面 */
     .answers-each-area {
       width: 80%;
-    }
-
-    /* ダウンロードページ */
-    .log-area{
-      width: calc(100% + 505%);
     }
   }
