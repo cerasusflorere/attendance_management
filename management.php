@@ -80,14 +80,15 @@
             <table border="1" style='border-collapse: collapse;'>
                 <thead>
                     <tr>
-                        <th colspan="5" class='white left'></th>
+                        <th colspan="2" class='white right-white name-date left fixed fixed-name'></th>
+                        <th colspan='3' class='white left-white'></th>
                         <th colspan="10" class='green'>医心館</th>
                         <th colspan="4" class='blue right'>その他</th>
                     </tr>
 
                     <tr>
-                        <th class='table-name white left'>名前</th>
-                        <th class='table-date white'>日付</th>
+                        <th class='table-name white left fixed fixed-name'>名前</th>
+                        <th class='table-date white fixed fixed-date'>日付</th>
                         <th class='table-health white bottom'>健康チェック</th>
                         <th class='table-time white red bottom'>その日医心館に最初に入館した時間</th>
                         <th class='table-time white red bottom'>帰宅のために医心館から退館した時間</th>
