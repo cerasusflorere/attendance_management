@@ -115,6 +115,49 @@
     transform: translateY(0.25em);/*下に動く*/
     border-bottom: none;/*線を消す*/
   }
+  /* 設定画面へいくためのパスワード入力エリア */
+#setting_pass{
+	display: none; /* label でコントロールするので input は非表示に */
+}
+.overlay {
+	display: none; /* input にチェックが入るまでは非表示に */
+}
+#setting_pass:checked + .overlay {
+	display: block;
+	z-index: 9999;
+	background-color: #00000070;
+	position: fixed;
+	width: 100%;
+	height: 100vh;
+	top: 0;
+	left: 0;
+  cursor: pointer; 
+}
+.window {
+	width: auto;
+	height: auto;
+	background-color: #ffffff;
+	border-radius: 0.625em;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+  padding: 0.625em 1.25em;
+  cursor: default;
+}
+.close {
+	cursor:pointer;
+	position: absolute;
+  top: 0.5em;
+  right: 1.25em;
+  font-size: 1.25em;
+}
+.setting-pass-explanation{
+  padding: 0.5em 0em;
+  margin-bottom: 0em;
+}
   
 
   /* 来校情報登録画面 */
@@ -122,6 +165,14 @@
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    align-items: center;
+  }
+  .success-message-area{
+    display: flex;
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    justify-content: center;
     align-items: center;
   }
   form{
@@ -355,13 +406,172 @@
   }
 
 
+  /* 設定画面 */
+  /*タブ切り替え全体のスタイル*/
+.tabs{
+  margin: 0 auto;
+}
+/*タブのスタイル*/
+.tab_item{
+  width: calc(100%/2);
+  height: 3em;
+  border-bottom: 3px solid #787878;
+  background-color: #d9d9d9;
+  line-height: 3em;
+  text-align: center;
+  color: #565656;
+  display: block;
+  float: left;
+  text-align: center;
+  font-weight: bold;
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+.tab_item:hover {
+  opacity: 0.75;
+}
+/*ラジオボタンを全て消す*/
+input[name="tab_item"] {
+  display: none;
+}
+/*タブ切り替えの中身のスタイル*/
+.tab_content {
+  display: none;
+  padding: 0 2em 1em;
+  clear: both;
+  overflow: hidden;
+  text-align: center;
+}
+.former_content{
+  padding-top: 1.5em;
+}
+/*選択されているタブのコンテンツのみを表示*/
+#active:checked ~ #active_members,
+#former:checked ~ #former_members {
+  display: block;
+}
+/*選択されているタブのスタイルを変える*/
+.tabs input:checked + .tab_item {
+  background-color: #787878;
+  color: #fff;
+}
+/* 管理画面表タイトル */
+.position_name {
+  font-size: 1.2em;
+  margin-top: 0.8em;
+  margin-bottom: 0.1em;
+}
+/* 管理画面表 */
+.setting-tab {
+  margin: 0 auto;
+}
+th, td {
+  padding: 0.5em;
+  text-align: center;
+  vertical-align: middle;
+}
+th, td, form {
+  margin: 0;
+}
+.numberTd {
+  width: 2.5em;
+}
+.nameTd {
+  width: 15em;
+}
+.buttonTd {
+  width: 2.4em;
+}
+.edit-show-button:active {
+  -webkit-transform: translateY(0.25em);
+  transform: translateY(0.25em);/*下に動く*/
+  border-bottom: none;/*線を消す*/
+}
+
+/* 編集画面 */
+.edit-modal-wrapper {
+  z-index: 9999;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+.edit-modal-wrapper:not(:target) {
+  opacity: 0;
+  visibility: hidden;
+}
+.edit-close {
+  cursor: pointer;
+  position: absolute;
+  top: 0.5em;
+  right: 1.25em;
+  font-size: 1.25em;
+  color: black;
+  text-decoration: none;
+}
+.edit-overlay {
+	display: block;
+	background-color: #00000070;
+	position: fixed;
+	width: 100%;
+	height: 100vh;
+	top: 0;
+	left: 0;
+}
+.edit-window {
+	width: auto;
+	height: auto;
+	background-color: #ffffff;
+	border-radius: 0.625em;
+	justify-content: center;
+	align-items: center;
+	position: fixed;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+  padding: 0.625em 1.25em;
+}
+.edit-text {
+  padding: 0.1em;
+}
+.edit-holder {
+  margin-top: 1em;
+  margin-bottom: 0.2em;
+  font-size: 0.8em;
+}
+.edit-content{
+  font-size: 1em;
+}
+.buttonP  {
+  margin: 0.8em auto 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.edit-button {
+  margin: 0;
+  margin-right: 0.6em;
+}
+.del-button{
+  border: none;
+  background: transparent;
+  margin-left: 0.6em;
+  cursor: pointer;
+}
+.del-button:active {
+  -webkit-transform: translateY(0.25em);
+  transform: translateY(0.25em);/*下に動く*/
+  border-bottom: none;/*線を消す*/
+}
+
   /* 695px以下に適用されるCSS（スマホ用） */
   @media screen and (max-width: 695px) {
     /* ホーム画面 */
     .login-page {
       width: 85%;
     }
-    .login-title{
+    .login-title {
       font-size: 1em;
     }
 
