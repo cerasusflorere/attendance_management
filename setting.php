@@ -28,13 +28,9 @@
 
     // テーブルから情報を取得
     // logsは今後の出力の元、オブジェクトが入った配列
-    $logs_positions = array();
-    $positions = array();
-    $logs_members = array();
-
     // positionを取得
     try{
-        $result = $mysqli->query("SELECT id, name, position, studentID, year FROM member");
+        $result = $mysqli->query("SELECT position FROM position");
         while ($row = $result->fetch_assoc()){
             $logs_position[] = $row;
         }
@@ -50,7 +46,7 @@
     try{
         $result = $mysqli->query("SELECT id, name, position, studentID, year FROM member");
         while ($row = $result->fetch_assoc()){
-            $logs[] = $row;
+            $logs_members[] = $row;
         }
         $result->close();
     }catch(PDOException $e){
@@ -61,7 +57,7 @@
     }
     
     $logs_position = json_encode($logs_position);
-    $logs = json_encode($logs);
+    $logs_members = json_encode($logs_members);
 ?>
 
 <body>
@@ -71,13 +67,19 @@
         <label class='tab_item' for='active'>現在のメンバー</label>
         <input id='former' type='radio' name='tab_item'onclick='findFormermembers()'>
         <label class='tab_item' for='former'>過去のメンバー</label>
-        
+        <input id='newcomer' type='radio' name='tab_item'onclick='showAddmembers()'>
+        <label class='tab_item' for='newcomer'>メンバー追加</label>
+                
         <!-- タブ中身 -->
         <!-- 現在のメンバー -->
         <div class='tab_content' id='active_members'></div>
         <!-- 過去のメンバー -->
         <div class='tab_content former_content' id='former_members'>
             <table class='setting-tab' id='table_former' border='1' style='border-collapse: collapse'></table>
+        </div>
+        <!-- メンバー追加 -->
+        <div class='tab_content newcomer_content' id='newcomer_members'>
+            
         </div>
     </div>
 
@@ -96,11 +98,19 @@
 
 <script>
     window.onload = findActivemembers;
-    var members = JSON.parse('<?php echo $logs; ?>'); //JSONデコード
+    var members = JSON.parse('<?php echo $logs_members; ?>'); //JSONデコード
+    const logs_positions = Array(JSON.parse('<?php echo $logs_position; ?>')); //JSONデコード
     const active_members = document.getElementById('active_members');      
     const table_former = document.getElementById('table_former');
     let edit_modal = document.getElementById('edit_modal');
     const editArea = document.getElementById('editlist');
+    let positions = [];
+
+    logs_positions.forEach((logs_position) => {
+        logs_position.forEach((log_position) => {
+            positions.push(log_position['position']);
+        })
+    })
 
     // members配列を各position毎に分割
     var members_Staff = [];
@@ -329,6 +339,7 @@
     function showEditData(id, name, position, studentID, year, new_members){
         editArea.innerHTML = ''; // 複数表示されるのを防ぐ
         const edit_id = id;
+        const now_position = position;
 
         const memberDiv = document.createElement('div');
         memberDiv.className = 'edit-text';
@@ -348,11 +359,22 @@
         positionP.className = 'edit-holder';
         positionP.innerText = 'position';
 
-        const positionInput = document.createElement('input');
-        positionInput.type = 'text';
-        positionInput.className = 'edit-content';
-        positionInput.id = 'edit-position';
-        positionInput.value = position;
+        const positionSelect = document.createElement('select');
+        positionSelect.name = 'position';
+        positionSelect.id = 'position';
+        
+        positions.forEach((position) => {
+            var positionOption = document.createElement('option');
+            positionOption.value = position;
+            positionOption.text = position;
+
+            if(position == now_position){
+                positionOption.setAttribute('selected', 'selected');
+            }
+                
+            positionSelect.appendChild(positionOption);
+        });
+        
 
         const studentIDP = document.createElement('p');
         studentIDP.className = 'edit-holder';
@@ -397,7 +419,7 @@
         memberDiv.appendChild(nameP);
         memberDiv.appendChild(nameInput);
         memberDiv.appendChild(positionP);
-        memberDiv.appendChild(positionInput);
+        memberDiv.appendChild(positionSelect);
         memberDiv.appendChild(studentIDP);
         memberDiv.appendChild(studentIDInput);
         memberDiv.appendChild(yearP);
