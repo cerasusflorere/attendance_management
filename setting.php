@@ -435,7 +435,13 @@
                             member['year'] = year;
                         }
                     })
+                    // モーダルウィンドウを閉じる
                     edit_modal.checked = false;
+                    // 表示を変更
+                    const edit_member = document.getElementById('cell-' + edit_id);
+                    const edit_element = edit_member.querySelector('td:nth-child(2)');
+                    const edit_name = edit_element.firstElementChild;
+                    edit_name.textContent = name;
                   }else if(req.readyState == 4 && req.status != 200) {
                     alert(req.response);
                   }
@@ -452,19 +458,24 @@
     }
 
     function disp(edit_id, new_members){
-        if(confirm('削除します。データは復元できませんがよろしいですか？') == true){
+        if(confirm('該当人物を削除します。データは復元できませんがよろしいですか？') == true){
             const url = './dispData.php'; // 通信先
             const req = new XMLHttpRequest(); // 通信用オブジェクト
-            const data = {id: pareInt(edit_id, 10)};
+            const data = {id: parseInt(edit_id, 10)};
 
             req.onreadystatechange = function() {
                 if(req.readyState == 4 && req.status == 200) {
                     alert("削除しました");
                     // 削除したら、このページ上のデータからも削除する                    
-                    var new_members = new_members.filter((member) => {
+                    var result = new_members.filter((member) => {
                         return (member.id != edit_id);
                     });
+                    new_members = result;
+                    // モーダルウィンドウを閉じる
                     edit_modal.checked = false;
+                    // 該当人物を画面から削除
+                    const disp_member = document.getElementById('cell-' + edit_id);
+                    disp_member.remove(); 
                 }else if(req.readyState == 4 && req.status != 200) {
                    alert(req.response);
                 }
