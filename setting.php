@@ -82,15 +82,16 @@
     </div>
 
     <!-- 編集画面 -->
-    <div class='edit-modal-wrapper' id='edit-modal'>
-        <a href='#!' class='edit-overlay'></a>      
+    <input type='checkbox' id='edit_modal'/>
+    <label class='edit_overlay' for='edit_modal'>
+        <a href='#!'></a>      
         <div class='edit-window'>
             <a href="#!" class="edit-close">×</a>
             <div class='edit-text' id='editlist'>
                 <!-- 編集情報 -->
             </div>
         </div>      
-    </div>
+    </label>
 </body>
 
 <script>
@@ -98,7 +99,7 @@
     var members = JSON.parse('<?php echo $logs; ?>'); //JSONデコード
     const active_members = document.getElementById('active_members');      
     const table_former = document.getElementById('table_former');
-    const edit_modal = document.querySelector('.edit-modal-wrapper');
+    let edit_modal = document.getElementById('edit_modal');
     const editArea = document.getElementById('editlist');
 
     // members配列を各position毎に分割
@@ -176,6 +177,7 @@
             editA.href = "#edit-modal";
             editA.setAttribute('name', 'edit_button');
             editA.onclick = function() {
+                edit_modal.checked = true;
                 showEditData(member.id, member.name, member.position, member.studentID, member.year, new_members);
             }
         
@@ -410,7 +412,6 @@
     function edit(edit_id, name, position, studentID, year, new_members){
         if(name != '' && position != ''){
             if(confirm('これで登録して良いですか？') == true){
-                // 完成していない
                 const url = './editData.php'; // 通信先
                 const req = new XMLHttpRequest(); // 通信用オブジェクト
             
@@ -425,7 +426,7 @@
                 req.onreadystatechange = function() {
                   if(req.readyState == 4 && req.status == 200) {
                     alert("更新しました");
-                    
+                    // 更新したら、このページ上のデータも更新する                    
                     new_members.forEach((member) =>{
                         if(member['id'] == edit_id){
                             member['name'] = name;
@@ -434,8 +435,7 @@
                             member['year'] = year;
                         }
                     })
-                    const str = getComputedStyle(document.querySelector('.edit-modal-wrapper'), ':not(:target)').visibility;
-                    console.log(str);
+                    edit_modal.checked = false;
                   }else if(req.readyState == 4 && req.status != 200) {
                     alert(req.response);
                   }
@@ -449,6 +449,32 @@
         }else{
             alert('名前もしくはpositionが空欄です。');
         }        
+    }
+
+    function disp(edit_id, new_members){
+        if(confirm('削除します。データは復元できませんがよろしいですか？') == true){
+            const url = './dispData.php'; // 通信先
+            const req = new XMLHttpRequest(); // 通信用オブジェクト
+            const data = {id: pareInt(edit_id, 10)};
+
+            req.onreadystatechange = function() {
+                if(req.readyState == 4 && req.status == 200) {
+                    alert("削除しました");
+                    // 削除したら、このページ上のデータからも削除する                    
+                    var new_members = new_members.filter((member) => {
+                        return (member.id != edit_id);
+                    });
+                    edit_modal.checked = false;
+                }else if(req.readyState == 4 && req.status != 200) {
+                   alert(req.response);
+                }
+            }
+            req.open('POST', url, true);
+            req.setRequestHeader('Content-Type', 'application/json');
+            req.send(JSON.stringify(data)); // オブジェクトを文字列化して送信
+        }else{
+            alert('キャンセルが押されました。');
+        }   
     }
        
 </script>
