@@ -25,6 +25,7 @@
 
     // 成功・エラーメッセージの初期化
     $errors = array();
+    $drop_position = '';    
 
     // テーブルから情報を取得
     // logsは今後の出力の元、オブジェクトが入った配列
@@ -32,7 +33,7 @@
     try{
         $result = $mysqli->query("SELECT position FROM position");
         while ($row = $result->fetch_assoc()){
-            $logs_position[] = $row;
+            $logs_position[] = $row['position'];
         }
         $result->close();
     }catch(PDOException $e){
@@ -41,6 +42,11 @@
         $errors['error'] = "もう一度やり直してください。";
         print('Error:'.$e->getMessage());
     }
+    // 新規追加用ドロップメニュー
+    foreach($logs_position as $position){
+        $drop_position .= "<option value='{$position}'>{$position}</option>";
+    }
+
 
     // 名前を取得
     try{
@@ -55,9 +61,69 @@
         $errors['error'] = "もう一度やり直してください。";
         print('Error:'.$e->getMessage());
     }
+
+    $drop_years = '';
+    // 新規追加用ドロップメニュー（年）
+    for($i=2008; $i <= intval(date('Y')); $i++){
+        $logs_years[] = $i;
+        $drop_years .= "<option value='{$i}'>{$i}</option>";
+    }
+    array_unshift($logs_years, '');
     
     $logs_position = json_encode($logs_position);
     $logs_members = json_encode($logs_members);
+    $logs_years = json_encode($logs_years);
+
+    $add_member_op = false;
+    // 確認する(btn_confirm)を押した後の処理
+    if(isset($_POST['btn_confirm'])){
+        $POSTS = $_POST;
+        $POST = array_pop($POSTS);
+        // POSTされたデータをいれる
+        foreach($POSTS as $index => $posts){
+            foreach($posts as $number => $post){
+                $index = str_replace('add_', '', $index);
+                $newcomer_members[$number][$index] = $post;
+                // $number→人、$index→キー名
+            }
+        }
+        foreach($newcomer_members as $newcomer){
+            foreach($newcomer as $infos => $info){
+                $_SESSION[$newcomer['name']][$infos] = $info;
+            }
+        }
+        $add_number = 1;
+        $add_member_op = true;
+    }
+
+    // 登録する(btn_submit)を押した後の処理
+    if(isset($_POST['btn_submit'])){
+        if($_SESSION){
+            foreach($_SESSION as $newcomer_name){
+                if($newcomer_name['studentID'] == ''){
+                    $newcomer_name['studentID'] = NULL;
+                }
+                if($newcomer_name['year'] == ''){
+                    $newcomer_name['year'] = NULL;
+                }
+                // ここでデータベースに登録する
+                try{
+                    $stmt = $mysqli -> prepare("INSERT INTO member (name, position, studentID, year) VALUES (?, ?, ?, ?)");
+                    $stmt -> bind_param('ssii', $newcomer_name['name'], $newcomer_name['position'], $newcomer_name['studentID'], $newcomer_name['year']);
+                    $stmt -> execute();
+                    $_SESSION = array();
+                    $add_member_op = true;
+                }catch(PDOException $e){
+                    //トランザクション取り消し
+                    $pdo -> rollBack();
+                    $errors['error'] = "もう一度やり直してください。";
+                    print('Error:'.$e->getMessage());
+                }
+            }
+        }else{
+            
+        }
+    }
 ?>
 
 <body>
@@ -66,9 +132,9 @@
         <input id='active' type='radio' name='tab_item' onclick='findActivemembers()'checked>
         <label class='tab_item' for='active'>現在のメンバー</label>
         <input id='former' type='radio' name='tab_item'onclick='findFormermembers()'>
-        <label class='tab_item' for='former'>過去のメンバー</label>
-        <input id='newcomer' type='radio' name='tab_item'onclick='showAddmembers()'>
-        <label class='tab_item' for='newcomer'>メンバー追加</label>
+        <label class='tab_item former_tab' for='former'>過去のメンバー</label>
+        <input id='newcomer' type='radio' name='tab_item' <?= $add_member_op ? 'checked' : '' ?>>
+        <label class='tab_item newcomer_tab' for='newcomer'>メンバー追加</label>
                 
         <!-- タブ中身 -->
         <!-- 現在のメンバー -->
@@ -79,7 +145,116 @@
         </div>
         <!-- メンバー追加 -->
         <div class='tab_content newcomer_content' id='newcomer_members'>
-            
+            <!-- page3 完了画面 -->
+            <?php if(isset($_POST['btn_submit']) && count($errors) == 0): ?>
+                <?php $_POST = array(); ?>
+                <div class='all-add-form-area'>
+                    <div class='add-form-area'>
+                        <div class='success-message'>
+                            登録しました。
+                        </div>
+                    </div>
+                    <a href="setting.php" class='submit-button more-add-button'>さらに追加</a>
+                </div>        
+
+            <!-- page2 確認画面 -->
+            <?php elseif(isset($_POST['btn_confirm']) && count($errors) == 0): ?>
+                <p class='confirm-message'>以下の情報を登録します。</p>
+                <form action='' method='post'>
+                    <div class='all-add-form-area'>
+                        <?php foreach($_SESSION as $newcomer_name){?>
+                            <div class='add-form-area'>
+                                <p class='add-number'><?=h($add_number)?><?php $add_number++?></p>
+                                <div class='add-div'>
+                                    <div class='add-input-area'>
+                                        <p class='add-holder'>Name</p>
+                                        <div class='add-input'><?=h($newcomer_name['name'])?></div>
+                                    </div>
+                                    <div class='add-input-area'>
+                                        <p class='add-holder'>Position</p>
+                                        <div class='add-input'><?=h($newcomer_name['position'])?></div>
+                                    </div>
+                                    <div class='add-input-area'>
+                                        <p class='add-holder'>studentID</p>
+                                        <div class='add-input'><?=h($newcomer_name['studentID'])?></div>
+                                    </div>
+                                    <div class='add-input-area'>
+                                        <p class='add-holder'>Graduation year</p>
+                                        <div class='add-input'><?=h($newcomer_name['year'])?></div>
+                                    </div>
+                                </div>                                
+                            </div>
+                        <?php } ?>
+                    </div>
+                    <div class='login-button-area'>
+                        <input type='submit' name='btn_back' class='submit-button' value='戻る'>
+                        <input type='submit' name='btn_submit' class='submit-button' value='登録する'>
+                    </div>                
+            </from>
+
+            <!-- page1 登録画面 -->
+            <?php elseif(!isset($errors['error']) || isset($_POST["btn_back"])): ?>
+                <?php $add_form = '1'; ?>
+                <?php if(count($errors) > 0): ?>
+                    <div class='error-message'>
+                        <?php 
+                            foreach($errors as $value){
+                                echo nl2br($value.PHP_EOL);
+                            }
+                        ?>
+                    </div>
+                <?php endif; ?>
+
+                <form action='' method='post' id='add_form'>
+                    <div class='all-add-form-area' id='all_add_form_area_id'>
+                        <div class='add-form-area' name='add_form_area_name[]' id='add_form_area_id'>
+                            <p class='add-number'>1</p>
+                            <div class='add-div' name='add_div[]'>                            
+                                <!-- 名前を記入 -->
+                                <div class='add-input-area'>
+                                    <p class='add-holder'>Name</p>
+                                    <input type='text' class='add-input' name='add_name[]' id='add_name' placeholder='name' required>
+                                </div>
+                                <!-- 学年を選ぶ -->                    
+                                <div class='add-input-area'>
+                                    <p class='add-holder'>Position</p>
+                                    <select class='add-input' name='add_position[]' id='add_position' required>
+                                        <option value=''>選択してください</option>
+                                        <?php 
+                                            echo $drop_position; ?>
+                                    </select>
+                                </div>
+                                <!-- 学籍番号を記入 -->
+                                <div class='add-input-area'>
+                                    <div class='add-holder-area'>
+                                        <p class='add-holder'>学籍番号</p>
+                                        <div class='add-holder add-optional-message'>-Optional</div>
+                                    </div>                                
+                                    <input type='text' class='add-input' name='add_studentID[]' id='add_studentID' placeholder='学籍番号'>
+                                </div>
+                                <!-- 卒業年を記入 -->
+                                <div class='add-input-area add-input-area-year'>
+                                    <div class='add-holder-area'>
+                                        <p class='add-holder'>卒業年</p>
+                                        <div class='add-holder add-optional-message'>-Optional</div>
+                                    </div>                                
+                                    <select class='add-input' name='add_year[]' id='add_year'>
+                                        <option value=''>選択してください</option>
+                                        <?php 
+                                            echo $drop_years; ?>
+                                    </select>
+                                </div>       
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p class='add-button-area'>
+                        <input type='button' value='+' class='add-button' onclick="addMember_add()">
+                        <input type='button' value='-' class='add-button' onclick="addMember_disp()">
+                    </p>                            
+                    <input type='submit' name='btn_confirm' class='submit-button' value='確認する'>
+                </form>                            
+            <?php endif; ?>
         </div>
     </div>
 
@@ -100,18 +275,35 @@
     window.onload = findActivemembers;
     var members = JSON.parse('<?php echo $logs_members; ?>'); //JSONデコード
     const logs_positions = Array(JSON.parse('<?php echo $logs_position; ?>')); //JSONデコード
-    const active_members = document.getElementById('active_members');      
+    const logs_years = Array(JSON.parse('<?php echo $logs_years; ?>'));
+    // 現在のメンバー
+    const active_members = document.getElementById('active_members');
+    // 過去のメンバー     
     const table_former = document.getElementById('table_former');
+    // 編集
     let edit_modal = document.getElementById('edit_modal');
     const editArea = document.getElementById('editlist');
+    // メンバー追加
+    let currentNumber = 1;
+    let parent_elements = document.getElementById('all_add_form_area_id');
+    let newcomer = document.getElementById('newcomer');
+    let active = document.getElementById('active');
+    // position,yearセット
     let positions = [];
+    let years = [];
 
     logs_positions.forEach((logs_position) => {
         logs_position.forEach((log_position) => {
-            positions.push(log_position['position']);
+            positions.push(log_position);
         })
     })
-
+    logs_years.forEach((logs_year) => {
+        logs_year.forEach((log_year) => {
+            years.push(log_year);
+        })
+    })
+    
+    // 現在のメンバー＆過去のメンバー
     // members配列を各position毎に分割
     var members_Staff = [];
     var members_Postdoc = [];
@@ -212,7 +404,7 @@
     }
 
     // 現在のメンバーを探す
-    function findActivemembers(){    
+    function findActivemembers(){
         active_members.innerHTML ='';
        
         const staffDiv = document.createElement('div');
@@ -340,6 +532,7 @@
         editArea.innerHTML = ''; // 複数表示されるのを防ぐ
         const edit_id = id;
         const now_position = position;
+        const now_year = year;
 
         const memberDiv = document.createElement('div');
         memberDiv.className = 'edit-text';
@@ -368,6 +561,7 @@
             positionOption.value = position;
             positionOption.text = position;
 
+            // 現在のpositionを初期値とする
             if(position == now_position){
                 positionOption.setAttribute('selected', 'selected');
             }
@@ -378,7 +572,7 @@
 
         const studentIDP = document.createElement('p');
         studentIDP.className = 'edit-holder';
-        studentIDP.innerText = 'studentID';
+        studentIDP.innerText = '学籍番号';
 
         const studentIDInput = document.createElement('input');
         studentIDInput.type = 'text';
@@ -390,11 +584,22 @@
         yearP.className = 'edit-holder';
         yearP.innerText = '卒業年';
 
-        const yearInput = document.createElement('input');
-        yearInput.type = 'text';
-        yearInput.className = 'edit-content';
-        yearInput.id = 'edit-position';
-        yearInput.value = year;
+        const yearSelect = document.createElement('select');
+        yearSelect.name = 'position';
+        yearSelect.id = 'position';
+        
+        years.forEach((year) => {
+            var yearOption = document.createElement('option');
+            yearOption.value = year;
+            yearOption.text = year;
+
+            // 現在のpositionを初期値とする
+            if(year == now_year){
+                yearOption.setAttribute('selected', 'selected');
+            }
+                
+            yearSelect.appendChild(yearOption);
+        });
 
         const buttonP = document.createElement('p');
         buttonP.className = 'buttonP';
@@ -404,7 +609,7 @@
         editInput.className = 'submit-button edit-button';
         editInput.value = 'Edit';
         editInput.onclick = function(){
-            edit(edit_id, nameInput.value, positionInput.value, studentIDInput.value, yearInput.value, new_members);
+            edit(edit_id, nameInput.value, positionSelect.value, studentIDInput.value, yearSelect.value, new_members);
         }
 
         const delButton = document.createElement('button'); // 削除ボタン
@@ -423,7 +628,7 @@
         memberDiv.appendChild(studentIDP);
         memberDiv.appendChild(studentIDInput);
         memberDiv.appendChild(yearP);
-        memberDiv.appendChild(yearInput);
+        memberDiv.appendChild(yearSelect);
         buttonP.appendChild(editInput);
         delButton.appendChild(delI);
         buttonP.appendChild(delButton);
@@ -510,5 +715,27 @@
         }   
     }
        
+    // メンバー追加
+    // フォーム追加
+    function addMember_add(){
+        currentNumber++;
+        let elements = document.getElementById('add_form_area_id');
+        let copied = parent_elements.firstElementChild.cloneNode(true);
+        var firstChildP = copied.firstChild.nextElementSibling;
+        firstChildP.innerHTML = currentNumber;
+        copied.firstChild = firstChildP;
+        parent_elements.appendChild(copied);
+    }
+    // フォーム削除
+    function addMember_disp(){
+        if(currentNumber > 1){
+            currentNumber--;
+            const remove_element = parent_elements.children[currentNumber];
+            parent_elements.removeChild(remove_element);
+        }else{
+            alert('フォームが1つの場合には削除できません。');
+        }
+    }
+    
 </script>
 </html>
