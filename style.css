@@ -408,12 +408,13 @@
 
   /* 設定画面 */
   /*タブ切り替え全体のスタイル*/
-.tabs{
+.tabs {
   margin: 0 auto;
 }
 /*タブのスタイル*/
-.tab_item{
-  width: calc(100%/2);
+.tab_item {
+  z-index: 9999;
+  width: calc(100%/3);
   height: 3em;
   border-bottom: 3px solid #787878;
   background-color: #d9d9d9;
@@ -421,6 +422,7 @@
   text-align: center;
   color: #565656;
   display: block;
+  position: fixed;
   float: left;
   text-align: center;
   font-weight: bold;
@@ -430,6 +432,13 @@
 .tab_item:hover {
   opacity: 0.75;
 }
+.former_tab {
+  margin: 0 auto;
+  inset: 0;
+}
+.newcomer_tab {
+  right: 0em;
+}
 /*ラジオボタンを全て消す*/
 input[name="tab_item"] {
   display: none;
@@ -437,17 +446,18 @@ input[name="tab_item"] {
 /*タブ切り替えの中身のスタイル*/
 .tab_content {
   display: none;
-  padding: 0 2em 1em;
+  padding: 3em 2em 1em;
   clear: both;
   overflow: hidden;
   text-align: center;
 }
 .former_content{
-  padding-top: 1.5em;
+  padding-top: 4.5em;
 }
 /*選択されているタブのコンテンツのみを表示*/
 #active:checked ~ #active_members,
-#former:checked ~ #former_members {
+#former:checked ~ #former_members, 
+#newcomer:checked ~ #newcomer_members {
   display: block;
 }
 /*選択されているタブのスタイルを変える*/
@@ -500,6 +510,23 @@ th, td, form {
 .edit-modal-wrapper:not(:target) {
   opacity: 0;
   visibility: hidden;
+}
+#edit_modal{
+	display: none; /* label でコントロールするので input は非表示に */
+}
+.edit_overlay {
+	display: none; /* input にチェックが入るまでは非表示に */
+}
+#edit_modal:checked + .edit_overlay {
+	display: block;
+	z-index: 9999;
+	background-color: #00000070;
+	position: fixed;
+	width: 100%;
+	height: 100vh;
+	top: 0;
+	left: 0;
+  cursor: pointer; 
 }
 .edit-close {
   cursor: pointer;
@@ -563,6 +590,92 @@ th, td, form {
   -webkit-transform: translateY(0.25em);
   transform: translateY(0.25em);/*下に動く*/
   border-bottom: none;/*線を消す*/
+}
+
+/* 追加画面 */
+.newcomer_content {
+  flex-direction: column;
+  align-items: center;
+}
+.add-form-area {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: center;
+}
+.add-div {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
+  margin: 1em 0;
+  max-width: 22.5em;
+  text-align: center;
+  background: #FFFFFF;  
+  box-shadow: 0 0 1.25em 0 rgba(0, 0, 0, 0.2), 0 0.3125em 0.3125em 0 rgba(0, 0, 0, 0.24);
+}
+.add-number {
+  color: #787878;
+  margin-right: 1.5em;
+}
+.add-input-area {
+  margin: 0.8em 1.2em 0 1.2em;
+  display: flex;
+  align-items: flex-start;
+  flex-direction: column;
+}
+.add-input-area-year{
+  margin-bottom: 1em;
+}
+.add-holder-area {
+  margin: 0;
+  display: flex;
+  align-items: center;
+}
+.add-holder {
+  margin: 0;
+  margin-bottom: 0.4em;
+  font-size: 0.8em;
+  color: #787878;
+}
+.add-optional-message {
+  margin-left: 0.4em;
+  font-size: 0.4em;
+}
+.add-input {
+  font-size: 1em;
+}
+.add-button-area {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+}
+.add-button {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  position: relative;
+  width: 2em;
+  padding: 0.5em 1em;
+  line-height: 1em;
+  margin: 0 0.5em;
+  background: #fff;
+  border: 1px solid #666666;
+  box-sizing: border-box;
+  text-decoration: none;
+  transition-duration: 0.2s;
+  font-size: 1em;
+  cursor: pointer;
+}
+.add-button:active {
+  -webkit-transform: translateY(0.25em);
+  transform: translateY(0.25em);/*下に動く*/
+  border-bottom: none;/*線を消す*/
+}
+.more-add-button {
+  width: 6.5em;
+  padding: 0.8em 0;
 }
 
   /* 695px以下に適用されるCSS（スマホ用） */
