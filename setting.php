@@ -62,6 +62,7 @@
         print('Error:'.$e->getMessage());
     }
 
+    $add_form_number = 0;
     $drop_years = '';
     // 新規追加用ドロップメニュー（年）
     for($i=2008; $i <= intval(date('Y')); $i++){
@@ -88,8 +89,22 @@
             }
         }
         foreach($newcomer_members as $newcomer){
+            $exist_position = false;
+            $exist_year = false;
             foreach($newcomer as $infos => $info){
                 $_SESSION[$newcomer['name']][$infos] = $info;
+                if($infos == "position"){
+                    $exist_position = true;
+                }
+                if($infos == "year"){
+                    $exist_year = true;
+                }
+            }
+            if($exist_position == false){
+                $_SESSION[$newcomer['name']]['position'] = null;
+            }
+            if($exist_year == false){
+                $_SESSION[$newcomer['name']]['year'] = null;
             }
         }
         $add_number = 1;
@@ -135,7 +150,11 @@
         <label class='tab_item former_tab' for='former'>過去のメンバー</label>
         <input id='newcomer' type='radio' name='tab_item' <?= $add_member_op ? 'checked' : '' ?>>
         <label class='tab_item newcomer_tab' for='newcomer'>メンバー追加</label>
-                
+
+        <div class='setting-page-login-button-area'>
+            <a class='login-button home management-page-button setting-page-login-botton' href='login.php'><i class="fas fa-home fa-fw"></i>ホーム</a>
+        </div>
+                        
         <!-- タブ中身 -->
         <!-- 現在のメンバー -->
         <div class='tab_content' id='active_members'></div>
@@ -162,24 +181,24 @@
                 <p class='confirm-message'>以下の情報を登録します。</p>
                 <form action='' method='post'>
                     <div class='all-add-form-area'>
-                        <?php foreach($_SESSION as $newcomer_name){?>
+                        <?php foreach($_SESSION as $newcomer_name){ ?>
                             <div class='add-form-area'>
                                 <p class='add-number'><?=h($add_number)?><?php $add_number++?></p>
-                                <div class='add-div'>
-                                    <div class='add-input-area'>
-                                        <p class='add-holder'>Name</p>
+                                <div class='add-form-area'>
+                                    <div class='add-input-area add-input-area-confirm'>
+                                        <p class='holder'>Name</p>
                                         <div class='add-input'><?=h($newcomer_name['name'])?></div>
                                     </div>
-                                    <div class='add-input-area'>
-                                        <p class='add-holder'>Position</p>
+                                    <div class='add-input-area add-input-area-confirm'>
+                                        <p class='holder'>Position</p>
                                         <div class='add-input'><?=h($newcomer_name['position'])?></div>
                                     </div>
-                                    <div class='add-input-area'>
-                                        <p class='add-holder'>studentID</p>
+                                    <div class='add-input-area add-input-area-confirm'>
+                                        <p class='holder'>学籍番号</p>
                                         <div class='add-input'><?=h($newcomer_name['studentID'])?></div>
                                     </div>
-                                    <div class='add-input-area'>
-                                        <p class='add-holder'>Graduation year</p>
+                                    <div class='add-input-area add-input-area-confirm'>
+                                        <p class='holder'>卒業年</p>
                                         <div class='add-input'><?=h($newcomer_name['year'])?></div>
                                     </div>
                                 </div>                                
@@ -207,18 +226,18 @@
 
                 <form action='' method='post' id='add_form'>
                     <div class='all-add-form-area' id='all_add_form_area_id'>
-                        <div class='add-form-area' name='add_form_area_name[]' id='add_form_area_id'>
-                            <p class='add-number'>1</p>
+                        <div class='add-form-area' name='add_form_area_name[]' id='add_form_area_id_<?php echo $add_form_number ?>'>
+                            <p class='add-number' id='add_number_<?php echo $add_form_number ?>'>1</p>
                             <div class='add-div' name='add_div[]'>                            
                                 <!-- 名前を記入 -->
                                 <div class='add-input-area'>
-                                    <p class='add-holder'>Name</p>
-                                    <input type='text' class='add-input' name='add_name[]' id='add_name' placeholder='name' required>
+                                    <p class='holder'>Name</p>
+                                    <input type='text' class='content' name='add_name[]' id='add_named_<?php echo $add_form_number ?>' placeholder='name' required>
                                 </div>
                                 <!-- 学年を選ぶ -->                    
                                 <div class='add-input-area'>
-                                    <p class='add-holder'>Position</p>
-                                    <select class='add-input' name='add_position[]' id='add_position' required>
+                                    <p class='holder'>Position</p>
+                                    <select class='content' name='add_position[]' id='add_position_<?php echo $add_form_number ?>' required>
                                         <option value=''>選択してください</option>
                                         <?php 
                                             echo $drop_position; ?>
@@ -227,18 +246,16 @@
                                 <!-- 学籍番号を記入 -->
                                 <div class='add-input-area'>
                                     <div class='add-holder-area'>
-                                        <p class='add-holder'>学籍番号</p>
-                                        <div class='add-holder add-optional-message'>-Optional</div>
+                                        <p class='holder'>学籍番号</p>
                                     </div>                                
-                                    <input type='text' class='add-input' name='add_studentID[]' id='add_studentID' placeholder='学籍番号'>
+                                    <input type='text' class='content' name='add_studentID[]' id='add_studentID_<?php echo $add_form_number ?>' placeholder='学籍番号'>
                                 </div>
                                 <!-- 卒業年を記入 -->
                                 <div class='add-input-area add-input-area-year'>
                                     <div class='add-holder-area'>
-                                        <p class='add-holder'>卒業年</p>
-                                        <div class='add-holder add-optional-message'>-Optional</div>
+                                        <p class='holder'>卒業年</p>
                                     </div>                                
-                                    <select class='add-input' name='add_year[]' id='add_year'>
+                                    <select class='content' name='add_year[]' id='add_year_<?php echo $add_form_number ?>'>
                                         <option value=''>選択してください</option>
                                         <?php 
                                             echo $drop_years; ?>
@@ -260,7 +277,7 @@
 
     <!-- 編集画面 -->
     <input type='checkbox' id='edit_modal'/>
-    <label class='edit_overlay' for='edit_modal'>
+    <label class='edit-overlay' for='edit_modal'>
         <a href='#!'></a>      
         <div class='edit-window'>
             <a href="#!" class="edit-close">×</a>
@@ -288,6 +305,12 @@
     let parent_elements = document.getElementById('all_add_form_area_id');
     let newcomer = document.getElementById('newcomer');
     let active = document.getElementById('active');
+    let add_position_number = [];
+    add_position_number[0] = document.getElementById('add_position_0');
+    if(document.getElementById('add_position_0')){
+        add_position_number[0].addEventListener('change', changePosition);
+    }    
+
     // position,yearセット
     let positions = [];
     let years = [];
@@ -345,6 +368,74 @@
     members_Master1.sort(array_members_ID);
     members_Bachelor.sort(array_members_ID);
     members_Former.sort((a, b) => b.year - a.year);
+
+    // positionによって入力制限
+    // 学年が変更されたときの動作
+    function changePosition(event){
+        // 変更後の学年を取得
+        const str = event.currentTarget.id;
+        let now_id_number = '';
+        if(str == 'position'){
+            now_id_number = str;
+        }else{
+            now_id_number = str.replace('add_position_', '');
+        }// idの番号を取得
+        const changePosition = event.currentTarget.value; // position名を取得
+
+        // 学籍番号：D,M2,M1,B4は任意、他は無効
+        if(changePosition == "D" || changePosition == "M2" || changePosition == "M1" || changePosition == "B4"){
+            setNoDisableID(now_id_number);
+        }else{
+            setDisableID(now_id_number);
+        }
+        // 卒業年：過去メンバーは必須、他は無効
+        if(changePosition == "過去メンバー"){
+            setRequiredYear(now_id_number);
+        }else{
+            setDisableYear(now_id_number);
+        }
+    }
+
+    // 学籍番号について
+    function setNoDisableID(id_number){
+        let now_studentID_id = '';
+        if(id_number == 'position'){
+            now_studentID_id = 'edit-studentID';
+        }else{
+            now_studentID_id = 'add_studentID_' + id_number;
+        }
+        document.getElementById(now_studentID_id).disabled = false;
+    }
+    function setDisableID(id_number){
+        let now_studentID_id = '';
+        if(id_number == 'position'){
+            now_studentID_id = 'edit-studentID'
+        }else{
+            now_studentID_id = 'add_studentID_' + id_number;
+        }
+        document.getElementById(now_studentID_id).disabled = true;
+    }
+    // 卒業年について
+    function setRequiredYear(id_number){
+        let now_year_id = '';
+        if(id_number == 'position'){
+            now_year_id = 'edit-year';
+        }else{
+            now_year_id = 'add_year_' + id_number;
+        }
+        document.getElementById(now_year_id).required = true;
+        document.getElementById(now_year_id).disabled = false;
+    }
+    function setDisableYear(id_number){
+        let now_year_id = '';
+        if(id_number == 'position'){
+            now_year_id = 'edit-year';
+        }else{
+            now_year_id = 'add_year_' + id_number;
+        }
+        document.getElementById(now_year_id).required = false;
+        document.getElementById(now_year_id).disabled = true;
+    }
 
     // 表示する
     function addToList(new_members, table){
@@ -521,7 +612,6 @@
 
     // 過去のメンバーを探す
     function findFormermembers(){
-
         table_former.innerHTML ='';  
         
         addToList(members_Former, table_former);
@@ -539,20 +629,21 @@
         memberDiv.id = edit_id;
 
         const nameP = document.createElement('p');
-        nameP.className = 'edit-holder';
-        nameP.innerText = 'name';
+        nameP.className = 'holder';
+        nameP.innerText = 'Name';
 
         const nameInput = document.createElement('input');
         nameInput.type = 'text';
-        nameInput.className = 'edit-content';
+        nameInput.className = 'content';
         nameInput.id = 'edit-name';
         nameInput.value= name;
 
         const positionP = document.createElement('p');
-        positionP.className = 'edit-holder';
-        positionP.innerText = 'position';
+        positionP.className = 'holder';
+        positionP.innerText = 'Position';
 
         const positionSelect = document.createElement('select');
+        positionSelect.className = 'content';
         positionSelect.name = 'position';
         positionSelect.id = 'position';
         
@@ -568,38 +659,55 @@
                 
             positionSelect.appendChild(positionOption);
         });
+
+        if(positionSelect){
+            positionSelect.addEventListener('change', changePosition);
+        }
         
 
         const studentIDP = document.createElement('p');
-        studentIDP.className = 'edit-holder';
+        studentIDP.className = 'holder';
         studentIDP.innerText = '学籍番号';
 
         const studentIDInput = document.createElement('input');
         studentIDInput.type = 'text';
-        studentIDInput.className = 'edit-content';
+        studentIDInput.className = 'content';
         studentIDInput.id = 'edit-studentID';
         studentIDInput.value = studentID;
+        studentIDInput.disabled = false;
+        // positionによって入力制限
+        if(!(position == 'D' || position == 'M2' || position == 'M1' || position == 'B4')){
+            studentIDInput.disabled = true;
+        }
 
         const yearP = document.createElement('p');
-        yearP.className = 'edit-holder';
+        yearP.className = 'holder';
         yearP.innerText = '卒業年';
 
         const yearSelect = document.createElement('select');
+        yearSelect.className = 'content';
         yearSelect.name = 'position';
-        yearSelect.id = 'position';
+        yearSelect.id = 'edit-year';
+        yearSelect.required = true;
+        yearSelect.disabled = false;
         
         years.forEach((year) => {
             var yearOption = document.createElement('option');
             yearOption.value = year;
             yearOption.text = year;
 
-            // 現在のpositionを初期値とする
+            // 現在の卒業年を初期値とする
             if(year == now_year){
                 yearOption.setAttribute('selected', 'selected');
             }
                 
             yearSelect.appendChild(yearOption);
         });
+        // positionによって入力制限
+        if(!(position == '過去メンバー')){
+            yearSelect.required = false;
+            yearSelect.disabled = true;
+        }
 
         const buttonP = document.createElement('p');
         buttonP.className = 'buttonP';
@@ -636,6 +744,7 @@
         editArea.appendChild(memberDiv);
     }
 
+    // 編集
     function edit(edit_id, name, position, studentID, year, new_members){
         if(name != '' && position != ''){
             if(confirm('これで登録して良いですか？') == true){
@@ -676,6 +785,7 @@
                 req.open('POST', url, true);
                 req.setRequestHeader('Content-Type', 'application/json');
                 req.send(JSON.stringify(data)); // オブジェクトを文字列化して送信
+                location.reload();
             }else{
                alert('キャンセルが押されました。');
             }
@@ -717,14 +827,52 @@
        
     // メンバー追加
     // フォーム追加
-    function addMember_add(){
-        currentNumber++;
-        let elements = document.getElementById('add_form_area_id');
+    function addMember_add(){        
+        currentNumber++; // フォーム番号
+        const new_id_number = currentNumber - 1 ; // このフォームでのid番号 
+        const formerNumber = currentNumber - 2; // ひとつ前のフォーム（コピーしたフォーム）のid番号
+        // 要素をコピーする
         let copied = parent_elements.firstElementChild.cloneNode(true);
+        copied.id = 'add_form_area_id_' + new_id_number; // コピーした要素のidを変更
+        // フォーム番号を変更する
         var firstChildP = copied.firstChild.nextElementSibling;
-        firstChildP.innerHTML = currentNumber;
-        copied.firstChild = firstChildP;
+        firstChildP.innerHTML = currentNumber; // フォーム番号を変更
+        copied.firstChild = firstChildP; // フォーム番号を変更した要素を最初の子要素に代入
+        // コピーしてフォーム番号を変更した要素を親要素の一番最後の子要素にする
         parent_elements.appendChild(copied);
+        // positionのnameを取得する
+        const add_position = '#add_position_' + formerNumber;        
+        var copied_position_names = document.getElementsByName('add_position[]'); // 一度name属性を取得して、最後の要素のidを書き換える
+        // positionのidを変更する
+        const new_position_id = 'add_position_' + new_id_number; // 新しいpositionのid、文字＋計算はできない
+        copied_position_names[(copied_position_names.length)-1].id = new_position_id; // positionのidを変更
+        // positionのvalueに基づいて入力制限をする
+        add_position_number.push(document.getElementById(new_position_id)); 
+        if(add_position_number[new_id_number]){
+            add_position_number[new_id_number].addEventListener('change', changePosition);
+        }
+        // nameのidを変更する、初期化
+        const add_name = '#add_name_' + formerNumber;        
+        var copied_name_names = document.getElementsByName('add_name[]'); // 一度name属性を取得して、最後の要素のidを書き換える
+        const new_name_id = 'add_name_' + new_id_number; // 新しい学籍番号のid
+        copied_name_names[(copied_name_names.length)-1].id = new_name_id;
+        copied_name_names[(copied_name_names.length)-1].value = '';
+        // 学籍番号のidを変更する
+        const add_studentID = '#add_studentID_' + formerNumber;        
+        var copied_studentID_names = document.getElementsByName('add_studentID[]'); // 一度name属性を取得して、最後の要素のidを書き換える
+        const new_studentID_id = 'add_studentID_' + new_id_number; // 新しい学籍番号のid
+        copied_studentID_names[(copied_studentID_names.length)-1].id = new_studentID_id;
+        copied_studentID_names[(copied_studentID_names.length)-1].required = false;
+        copied_studentID_names[(copied_studentID_names.length)-1].disabled = false;
+        copied_studentID_names[(copied_studentID_names.length)-1].value = '';
+        // 卒業年のidを変更する
+        const add_year = '#add_year_' + formerNumber;        
+        var copied_year_names = document.getElementsByName('add_year[]'); // 一度name属性を取得して、最後の要素のidを書き換える
+        const new_year_id = 'add_year_' + new_id_number; // 新しい学籍番号のid
+        copied_year_names[(copied_year_names.length)-1].id = new_year_id;
+        copied_year_names[(copied_year_names.length)-1].required = false;
+        copied_year_names[(copied_year_names.length)-1].disabled = false;
+        copied_year_names[(copied_year_names.length)-1].value = '';
     }
     // フォーム削除
     function addMember_disp(){
@@ -732,6 +880,7 @@
             currentNumber--;
             const remove_element = parent_elements.children[currentNumber];
             parent_elements.removeChild(remove_element);
+            add_position_number.pop();
         }else{
             alert('フォームが1つの場合には削除できません。');
         }
