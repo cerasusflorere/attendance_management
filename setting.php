@@ -348,7 +348,7 @@
             members_Master2.push(member);
         }else if(member['position'] == 'M1'){
             members_Master1.push(member);
-        }else if(member['position'] == 'B4'){
+        }else if(member['position'] == 'B'){
             members_Bachelor.push(member);
         }else if(member['position'] == '研究生'){
             members_Researcher.push(member);
@@ -383,7 +383,7 @@
         const changePosition = event.currentTarget.value; // position名を取得
 
         // 学籍番号：D,M2,M1,B4は任意、他は無効
-        if(changePosition == "D" || changePosition == "M2" || changePosition == "M1" || changePosition == "B4"){
+        if(changePosition == "D" || changePosition == "M2" || changePosition == "M1" || changePosition == "B"){
             setNoDisableID(now_id_number);
         }else{
             setDisableID(now_id_number);
@@ -676,7 +676,7 @@
         studentIDInput.value = studentID;
         studentIDInput.disabled = false;
         // positionによって入力制限
-        if(!(position == 'D' || position == 'M2' || position == 'M1' || position == 'B4')){
+        if(!(position == 'D' || position == 'M2' || position == 'M1' || position == 'B')){
             studentIDInput.disabled = true;
         }
 
@@ -746,54 +746,76 @@
 
     // 編集
     function edit(edit_id, name, position, studentID, year, new_members){
+        let goedit = true;
         if(name != '' && position != ''){
-            if(confirm('これで登録して良いですか？') == true){
-                const url = './editData.php'; // 通信先
-                const req = new XMLHttpRequest(); // 通信用オブジェクト
-            
-                if(studentID == ''){
-                    studentID = null;
-                }
-                if(year == ''){
+            if(position == 'Staff' || position == '博士研究員' || position == '研究生'){
+                studentID = null;
+                year = null;
+            }else if(position == 'D' || position == 'M2' || position == 'M1' || position == 'B'){
+                if(!(studentID == '')){
                     year = null;
+                }else{
+                    goedit = false;
+                    alert('学籍番号を記入してください');
                 }
-                const data = {id: parseInt(edit_id, 10), name: name, position: position, studentID: parseInt(studentID, 10), year: parseInt(year, 10)};
+            }else{
+                if(!(year == '')){
+                    studentID = null;
+                }else{
+                    goedit = false;
+                    alert('卒業年を記入してください');
+                }
+            }
+            if(goedit){
+                if(confirm('これで登録して良いですか？') == true){
+                    const url = './editData.php'; // 通信先
+                    const req = new XMLHttpRequest(); // 通信用オブジェクト
+            
+                    if(studentID == ''){
+                        studentID = null;
+                    }
+                    if(year == ''){
+                        year = null;
+                    }
+                    const data = {id: parseInt(edit_id, 10), name: name, position: position, studentID: parseInt(studentID, 10), year: parseInt(year, 10)};
     
-                req.onreadystatechange = function() {
-                  if(req.readyState == 4 && req.status == 200) {
-                    alert("更新しました");
-                    // 更新したら、このページ上のデータも更新する                    
-                    new_members.forEach((member) =>{
-                        if(member['id'] == edit_id){
-                            member['name'] = name;
-                            member['position'] = position;
-                            member['studentID'] = studentID;
-                            member['year'] = year;
+                    req.onreadystatechange = function() {
+                        if(req.readyState == 4 && req.status == 200) {
+                            alert("更新しました");
+                            // 更新したら、このページ上のデータも更新する                    
+                            new_members.forEach((member) =>{
+                                if(member['id'] == edit_id){
+                                    member['name'] = name;
+                                    member['position'] = position;
+                                    member['studentID'] = studentID;
+                                    member['year'] = year;
+                                }
+                            })
+                            // モーダルウィンドウを閉じる
+                            edit_modal.checked = false;
+                            // 表示を変更
+                            const edit_member = document.getElementById('cell-' + edit_id);
+                            const edit_element = edit_member.querySelector('td:nth-child(2)');
+                            const edit_name = edit_element.firstElementChild;
+                            edit_name.textContent = name;
+                        }else if(req.readyState == 4 && req.status != 200) {
+                            alert(req.response);
                         }
-                    })
-                    // モーダルウィンドウを閉じる
-                    edit_modal.checked = false;
-                    // 表示を変更
-                    const edit_member = document.getElementById('cell-' + edit_id);
-                    const edit_element = edit_member.querySelector('td:nth-child(2)');
-                    const edit_name = edit_element.firstElementChild;
-                    edit_name.textContent = name;
-                  }else if(req.readyState == 4 && req.status != 200) {
-                    alert(req.response);
-                  }
-                }
+                    }
                 req.open('POST', url, true);
                 req.setRequestHeader('Content-Type', 'application/json');
                 req.send(JSON.stringify(data)); // オブジェクトを文字列化して送信
                 location.reload();
-            }else{
-               alert('キャンセルが押されました。');
-            }
+                }else{
+                    alert('キャンセルが押されました。');
+                }
+            }            
         }else{
             alert('名前もしくはpositionが空欄です。');
         }        
     }
 
+    // 削除
     function disp(edit_id, new_members){
         if(confirm('該当人物を削除します。データは復元できませんがよろしいですか？') == true){
             const url = './dispData.php'; // 通信先
