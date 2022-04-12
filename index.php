@@ -71,23 +71,5 @@
             </div>
         </div>        
     </div>
-    
-<script>
-    var correct_pass = '<?php echo $password; ?>'; //JSONデコード
-    const commentArea = document.getElementById('comment');
-
-    function checkPass(){
-        let enter_password = document.getElementById('password').value;
-        if(enter_password == correct_pass){
-            window.location.href = 'setting.php';
-        }else{
-            commentArea.innerHTML = '';
-        
-            const commentDiv = document.createElement('div');
-            commentDiv.innerText = 'パスワードが間違っています';
-            commentArea.appendChild(commentDiv);
-        }
-    }
-</script>
 </body>
 </html>
