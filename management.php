@@ -16,7 +16,17 @@
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
 
-    $mysqli = new mysqli('***', '***', '***', '***');
+    // envファイル使用のため
+    require '../vendor/autoload.php';
+    // .envを使用する
+    Dotenv\Dotenv::createImmutable(__DIR__)->load();
+    // .envファイルで定義したHOST等を変数に代入
+    $HOST = $_ENV["HOST"];
+    $USER = $_ENV["USER"];
+    $PASS = $_ENV["PASS"];
+    $DB = $_ENV["DB"];    
+
+    $mysqli = new mysqli($HOST, $USER, $PASS, $DB);
     if($mysqli->connect_error){
         echo $mysqli->connect_error;
         exit();
@@ -53,7 +63,6 @@
     array_multisort($sort_keys_date, SORT_ASC,$sort_keys_time, SORT_ASC, $logs);
 
     $logs = json_encode($logs);
-    
 ?>
 
 <body>
@@ -74,10 +83,14 @@
         <div class='download-button-area'>
             <button class='download-button' onclick="downloadData()"><i class="fas fa-download fa-fw"></i>ダウンロード</button>
         </div>
+
+        <div class='download-button-area'>
+            <button class='download-button' onclick="downloadData2()"><i class="fas fa-download fa-fw"></i>ダウンロード2</button>
+        </div>
     
         <div class='log-area'>
             <!-- ログ表示部分 -->
-            <table border="1" style='border-collapse: collapse;'>
+            <table border="1" style='border-collapse: collapse;' id='data-table'>
                 <thead>
                     <tr>
                         <th colspan="2" class='white right-white name-date left fixed fixed-name'></th>
@@ -117,6 +130,7 @@
     </div>
     
     
+    <script src="//cdnjs.cloudflare.com/ajax/libs/xlsx/0.11.19/xlsx.full.min.js"></script>
     <script>
         window.onload = setAllduration;
         let select_duration = document.getElementById('duration');
@@ -125,7 +139,8 @@
         let cells = [];  // 表示を変えた際に以前の表示を消す
         let data_number = 0; // 表示数を管理、これをもとに以前の表示を消す
         let new_logs = []; // 表示するデータ   
-        let set_number;     
+        let set_number;
+        let set_data;     
 
         const logs = JSON.parse('<?php echo $logs; ?>');
 
@@ -157,6 +172,7 @@
         // 全期間が選択されたとき
         function setAllduration(){
             set_number = '0';
+            set_data = 'All';
             new_logs = logs;
 
             addToList();
@@ -166,6 +182,7 @@
         // 2週間前が選択されたとき
         function set2weeks(){
             set_number = '1';
+            set_data = '2weeks';
             var date_2weeks = new Date();
             date_2weeks.setDate(date_2weeks.getDate()-14); // 2週間前の日付を取得
 
@@ -182,6 +199,7 @@
         // 1ヵ月前が選択されたとき
         function set1month(){
             set_number = '2';
+            set_data = '1month';
             var date_1month = new Date()
             date_1month.setMonth(date_1month.getMonth()-1) // 1ヵ月前の日付を取得
 
@@ -198,6 +216,7 @@
         // 1年前が選択されたとき
         function set1year(){
             set_number = '3';
+            set_data = '1year';
             var date_1year = new Date()
             date_1year.setFullYear(date_1year.getFullYear()-1) // 1年前の日付を取得
 
@@ -438,6 +457,12 @@
             req.open('POST', url, true);
             req.setRequestHeader('Content-Type', 'application/json');
             req.send(JSON.stringify(data)); // オブジェクトを文字列化して送信
+        }
+
+        function downloadData2(fn, type){
+	       var elt = document.querySelector("#data-table");
+	       var wb = XLSX.utils.table_to_book(elt, {sheet:"Sheet JS"});
+	       XLSX.writeFile(wb, 'attendance_log_'+'_'+set_data+'.xlsx');
         }
 
     </script>
