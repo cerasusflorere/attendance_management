@@ -16,7 +16,17 @@
         return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
     }
 
-    $mysqli = new mysqli('***', '***', '***', '***');
+    // envファイル使用のため
+    require '../vendor/autoload.php';
+    // .envを使用する
+    Dotenv\Dotenv::createImmutable(__DIR__)->load();
+    // .envファイルで定義したHOST等を変数に代入
+    $HOST = $_ENV["HOST"];
+    $USER = $_ENV["USER"];
+    $PASS = $_ENV["PASS"];
+    $DB = $_ENV["DB"];  
+
+    $mysqli = new mysqli($HOST, $USER, $PASS, $DB);
     if($mysqli->connect_error){
         echo $mysqli->connect_error;
         exit();
@@ -24,8 +34,8 @@
         $mysqli->set_charset("utf8mb4");
     }
     
-     // 成功・エラーメッセージの初期化
-     $errors = array();
+    // 成功・エラーメッセージの初期化
+    $errors = array();
 
     // position名を取得
     $drop_positions = array();
@@ -213,15 +223,18 @@
     <div class='register-main-area'>
         <!-- page3 完了画面 -->
         <?php if(isset($_POST['btn_submit']) && count($errors) == 0): ?>
-            <div class='answers-each-area finish-message-area'>
-                <div class='success-message'>
-                    登録しました。
+            <div class='success-message-area'>
+                <div class='answers-each-area finish-message-area'>
+                    <div class='success-message'>
+                        登録しました。
+                    </div>
+                    <div class='login-botton-area'>
+                        <a class='login-button' href='management.php'><i class="fas fa-eye fa-fw"></i>閲覧</a>
+                        <a class='login-button' href='attendance.php'><i class="fas fa-pen-square fa-fw"></i>登録</a>
+                    </div>  
                 </div>
-                <div class='login-botton-area'>
-                    <a class='login-button' href='management.php'><i class="fas fa-eye fa-fw"></i>閲覧</a>
-                    <a class='login-button' href='attendance.php'><i class="fas fa-pen-square fa-fw"></i>登録</a>
-                </div>   　    
             </div>
+            
               
 
         <!-- page2 確認画面 -->
@@ -390,8 +403,7 @@
         }
         
         const names_positions = JSON.parse('<?php echo $drop_name_position; ?>');
-
-    
+   
         // 学年が変更されたときの動作
         function changePosition(){
             // 変更後の学年を取得
@@ -408,12 +420,14 @@
                 setMaster2();
             }else if(changePosition == 'M1'){
                 setMaster1();
-            }else if(changePosition == 'B4'){
+            }else if(changePosition == 'B'){
                 setBachelor();
             }else if(changePosition == '研究生'){
                 setResearcher();
             }else if(changePosition == '共同研究員'){
                 setCollab();
+            }else if(changePosition == '過去メンバー'){
+                setFormer();
             }else{
                 select_name.innerHTML ='';
                 var option = document.createElement('option');
@@ -553,7 +567,7 @@
             let names = [];
             let number = 0;
             for(let i in names_positions){
-                if(names_positions[i] == 'B4'){
+                if(names_positions[i] == 'B'){
                     names[number] = names_positions[i-1];
                     number++;
                 }
@@ -614,9 +628,31 @@
                 
                 select_name.appendChild(nameOption);
             });
-        }
+        }     
 
-        
+        // 過去メンバーが選択されたとき
+        function setFormer(){
+            // 名前の選択肢を空にする
+            select_name.textContent = null;
+            
+            // セットする
+            let names = [];
+            let number = 0;
+            for(let i in names_positions){
+                if(names_positions[i] == '過去メンバー'){
+                    names[number] = names_positions[i-1];
+                    number++;
+                }
+            }
+
+            names.forEach((name) => {
+                var nameOption = document.createElement('option');
+                nameOption.value = name;
+                nameOption.text = name;
+                
+                select_name.appendChild(nameOption);
+            });
+        }        
     </script>
 </body>
 </html>   
