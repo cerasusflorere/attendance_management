@@ -35,6 +35,7 @@
             header("Location:setting.php");
         }else{
             $errors['miss'] = 'パスワードが間違っています。';
+
         }
     }
 ?>
@@ -49,7 +50,7 @@
                     <a class='login-button' href='attendance.php'><i class="fas fa-pen-square fa-fw"></i>登録</a>
                     <label class='login-button' for='setting_pass'><i class="fas far fa-cog fa-fw"></i>設定</label>
                     <!-- モーダルウィンドウ -->
-                    <input type='checkbox' id='setting_pass'/>
+                    <input type='checkbox' id='setting_pass' <?php if(count($errors) != 0 && isset($_POST['check_password'])){ echo 'checked'; } ?>/>
                     <label class='overlay' for='setting_pass'>
                         <div class='window'>
                             <label class='close' for='setting_pass'>×</label>
